@@ -5,7 +5,7 @@
     <div class="row">
     <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 <div class="col-lg-12">
-     <h2 class="card-title">Les processuses</h2>  
+     <h2 class="card-title">Processes</h2>  
 </div>
 
 </div>
@@ -13,7 +13,7 @@
 </div>
 <div class="-sm m-0 float-right">
                 @can('process-create')
-                <a class="btn btn-success rounded border" href="{{ route('process.create') }}"> Créer</a>
+                <a class="btn btn-success rounded border" href="{{ route('process.create') }}"> Create</a>
                 @endcan
                 </div>
 
@@ -29,7 +29,7 @@
             <th>No</th>
             <th>Name</th>
             <th>Details</th>
-            <th>Familles</th>
+            <th>Family</th>
             <th width="280px">Action</th>
         </tr>
 	    @foreach ($processes as $process)

@@ -18,18 +18,22 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::any('/home', 'HomeController@index')->name('home');
-
+Route::any('/home2', 'HomeController@index2')->name('home2');
 Route::any('/test', 'HomeController@test')->name('test');
 Route::get('cartographie','CartographieController@cartographie')->name('cartographie');
 Route::group(['middleware' => ['auth']], function() {
     Route::get('manager','HomeController@manager')->name('manager');
     Route::any('profile/profile','ProfileController@index')->name('profile.index');
+    Route::post('profile/profile/update','ProfileController@update')->name('profile.profile.update');
     Route::resource('roles/roles','RoleController');
     Route::resource('users/users','UserController');
     Route::resource('process/process','ProcessController');
     Route::resource('projects/projects','ProjectsController');
     Route::resource('indicators/indicators','IndicatorsController');
     Route::resource('indicprocs/indicprocs','IndicatorsprocController');
+    Route::resource('indicprojs/indicprojs','IndicatorsprojController');
+    Route::resource('indicusers/indicusers','IndicatorsprojController');
     Route::post('indicators/indicators/importExcel','IndicatorsController@importExcel')->name('indicators.index.importExcel');
     Route::post('indicators/indicators/importerExcelprojet','IndicatorsController@importerExcelprojet')->name('indicators.index.importerExcelprojet');
+    Route::post('indicators/indicators/importerExcelcollabo','IndicatorsController@importerExcelcollabo')->name('indicators.index.importerExcelcollabo');
 });

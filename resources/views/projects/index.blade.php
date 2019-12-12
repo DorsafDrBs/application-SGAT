@@ -6,7 +6,7 @@
   
     <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 <div class="col-lg-12">
-     <h2 class="card-title">Les projets</h2>  
+     <h2 class="card-title"> Projects</h2>  
 </div>
 
 </div>
@@ -15,7 +15,7 @@
 
                 <div class="-sm m-0 float-right">
                 @can('project-create')
-                <a class="btn btn-success rounded border" href="{{ route('projects.create') }}"> Créer</a>
+                <a class="btn btn-success rounded border" href="{{ route('projects.create') }}"> Create</a>
                 @endcan
                 </div>
             

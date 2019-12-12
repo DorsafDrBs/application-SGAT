@@ -6,9 +6,8 @@
   
   <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 <div class="col-lg-12">
-   <h2 class="card-title">Les roles</h2>  
+   <h2 class="card-title">Roles</h2>  
 </div>
-
 </div>
   
 </div>

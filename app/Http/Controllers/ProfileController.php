@@ -17,6 +17,7 @@ use App\Http\Requests;
 use Carbon\Carbon;
 use Validator,Redirect,Response,File;
 use DB;
+use Image;
 class ProfileController extends Controller
 {  public function __construct()
     {
@@ -143,25 +144,24 @@ return view('profile.profile',
 ['dataproc'=>$dataproc,'datac'=>$datac,'data'=>$data,'projs'=>$projs,'fprojs'=>$fprojs]);
 
 }
-public function save()
+public function update(Request $request)
     {
-       request()->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-       ]);
-       $person  = new person ;
-        $person->name = $request->name;
+        $request->validate([
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
-        if($request->hasFile('image')){
-          $image = $request->file('image');
-          $filename = time() . '.' . $image->getClientOriginalExtension();
-          Image::make($image)->resize(300, 300)->save( storage_path('/uploads/' . $filename ) );
-          $person->image = $filename;
-          $person->save();
-        };
+        $user = Auth::user();
 
-      $person->save();
-        return Redirect::to("image")
-        ->withSuccess('Great! Image has been successfully uploaded.');
+        $pictureName = $user->id.'_picture'.time().'.'.request()->picture->getClientOriginalExtension();
+
+        $request->picture->storeAs('pictures',$pictureName);
+
+        $user->picture = $pictureName;
+        $user->save();
+
+        return back()
+            ->with('success','You have successfully upload image.');
+
  
     }
 }

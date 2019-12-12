@@ -7,14 +7,14 @@
   
   <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 <div class="col-lg-12">
-   <h2 class="card-title">Les utilisateurs</h2>  
+   <h2 class="card-title">Users</h2>  
 </div>
 
 </div>
   
 </div>
             <div class="-sm m-0 float-right">
-            <a class="btn btn-success rounded border bottom" href="{{ route('users.create') }}"> Créer</a>
+            <a class="btn btn-success rounded border bottom" href="{{ route('users.create') }}"> Create</a>
           </div>
       
 
@@ -31,7 +31,7 @@
    <th>Name</th>
    <th>Email</th>
    <th>Roles</th>
-   <th width="280px">Action</th>
+   <th width="280px">Actions</th>
  </tr>
  @foreach ($data as $key => $user)
   <tr>

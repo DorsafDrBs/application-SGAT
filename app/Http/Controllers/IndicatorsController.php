@@ -14,91 +14,21 @@ use PHPExcel_IOFactory;
 include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
 
 class IndicatorsController extends Controller
-{ public function __construct()
+{ 
+	public function __construct()
   {
    $this->middleware('permission:indic-proc-list');
   $this->middleware('permission:indic-proc-create');
   $this->middleware('permission:indic-proc-edit',['only' => ['edit','update']]);
   $this->middleware('permission:indic-proc-delete', ['only' => ['destroy']]);
   }
-    public function index()
-    {
-     
-      $indicproj=indicatorsproj::orderByRaw('created_at','desc')
-      ->paginate(5);
-      $indicusers=indicatorsusers::orderByRaw('created_at','desc')
-      ->paginate(5);
-      return view('indicators.index',compact('indicproj','indicusers'))
-       ->with('i', (request()->input('page', 1) - 1) * 5);
-    }
-	
-  
-	
-/**
+ public function index()
+{
+   return view('indicators.index');
+}
 
-         * Store a newly created resource in storage.
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function store(Request $request,indicatorsproc $indicatorsproc)
-        {
-			switch ($request->input('action')) {
-			case 'save':
-				// Save data
-				
-            request()->validate([
-                'name' => 'required',
-                'detail' => 'required',
-            ]);
-    
-    
-            indicatorsproc::create($request->all());
-    
-    
-            return redirect()->route('indicators.index')
-							->with('success','indicateur  cree avec succes.');
-						break;
-						case 'update':
-							// update data
-							request()->validate([
-								'name' => 'required',
-								'detail' => 'required',
-							
-							]);
-					
-					
-							$process->update($request->all());
-					
-					
-							return redirect()->route('indicators.index')
-											->with('success','indicators updated successfully');
-							break;}
-				
-        }
-    
-		
-	
-		/**
-		 * Remove the specified resource from storage.
-		 *
-		 * @param  \App\process  $process
-		 * @return \Illuminate\Http\Response
-		 */
-		public function destroy(process $process)
-		{
-			$process->delete();
-	
-	
-			return redirect()->route('process.index')
-							->with('success','process deleted successfully');
-		}
-
-
-
-
-    public function importExcel(Request $request)
-    {
+public function importExcel(Request $request)
+{
         
       // Include PHPExcel_IOFactory (EXCEL)
    
@@ -109,9 +39,11 @@ class IndicatorsController extends Controller
 			$inputFileType = PHPExcel_IOFactory::identify($inputFileName);
 			$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 			$objPHPExcel = $objReader->load($inputFileName);
-		} catch(Exception $e) {
+		    }
+	    catch(Exception $e)
+		    {
 			die('Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
-		}
+		    }
 
 		// Get worksheet dimensions
 		$sheet = $objPHPExcel->getSheet(0); 
@@ -127,10 +59,10 @@ class IndicatorsController extends Controller
       // ** Show row data array 
       
       $process=DB::table('processes')->where('name',$row[3])->first();
-      $indics=DB::table('indicatorsprocs')->where('name',$row[0])->select('id','name')->first();
+      $indics=DB::table('indicatorsprocs')->where('detail',$row[0])->select('id','name','detail')->first();
    
-            DB::table('indicatorsproc_value')->insert([
-             'value' => $row[1], 
+			DB::table('indicatorsproc_value')
+			->insert(['value' => $row[1], 
              'target' => $row[2],
              'indic_id' =>$indics->id,
               'process_id' =>$process->id,
@@ -144,21 +76,24 @@ class IndicatorsController extends Controller
 }
 
 
-    public function importerExcelprojet(Request $request)
-    {
+public function importerExcelprojet(Request $request)
+{
         
       // Include PHPExcel_IOFactory (EXCEL)
    
 		$inputFileName = Input::file('import_file')->getRealPath();
 
 		// Read your Excel workbook
-		try {
+		try 
+		{
 			$inputFileType = PHPExcel_IOFactory::identify($inputFileName);
 			$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 			$objPHPExcel = $objReader->load($inputFileName);
-		} catch(Exception $e) {
+		 } 
+		catch(Exception $e)
+		 {
 			die('Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
-		}
+		 }
 
 		// Get worksheet dimensions
 		$sheet = $objPHPExcel->getSheet(0); 
@@ -170,7 +105,8 @@ class IndicatorsController extends Controller
 		$rows = $sheet->rangeToArray('B5:'.$highestColumn.$highestRow, NULL, TRUE, TRUE);
 
 		// Loop through each row of the worksheet in turn
-		foreach ($rows as $row){ 
+ foreach ($rows as $row)
+ { 
 			// ** Show row data array 
             $projects=DB::table('projects')->where('project_name',$row[2])->first();
             $indicator=DB::table('indicatorsprojs')->where('name','OTD')->first();
@@ -178,51 +114,139 @@ class IndicatorsController extends Controller
 			$indicator3=DB::table('indicatorsprojs')->where('name','Efficacité')->first();
 			$indicator4=DB::table('indicatorsprojs')->where('name','Efficience')->first();
 
-if($row[3] > 0){
+   if($row[3] > 0){
    
-            $val_otd=(((int)$row[3]-(int)$row[6])/(int)$row[3])*100;
-            $val_rft=(((int)$row[3]-(int)$row[4])/(int)$row[3])*100;
+         $val_otd=(((int)$row[3]-(int)$row[6])/(int)$row[3])*100;
+         $val_rft=(((int)$row[3]-(int)$row[4])/(int)$row[3])*100;
 
-            DB::table('indicatorsproj_value')->insert([
-            'projects_id' =>$projects->id,
-             'value' => $val_otd, 
-             'target' => $row[4],
-       'indicatorsproj_id'=>$indicator->id,
-              'created_at'=>$row[0],
-			  ]);
-			  DB::table('indicatorsproj_value')->insert([
-				'projects_id' =>$projects->id,
-				 'value' => $val_rft, 
-				 'target' => $row[5],
-		   'indicatorsproj_id'=>$indicator2->id,
-				  'created_at'=>$row[0],
-				  ]);
-				}
+      DB::table('indicatorsproj_value')->insert([
+         'projects_id' =>$projects->id,
+         'value' => $val_otd, 
+         'target' => $row[4],
+         'indicatorsproj_id'=>$indicator->id,
+         'created_at'=>$row[0],
+		  ]);
+	  DB::table('indicatorsproj_value')
+		 ->insert(['projects_id' =>$projects->id,
+		 'value' => $val_rft, 
+		 'target' => $row[5],
+		 'indicatorsproj_id'=>$indicator2->id,
+		 'created_at'=>$row[0],
+		  ]);
+	}
 			  		
-else if ($row[8] > 0)
-{
+    else if ($row[8] > 0)
+    {
    
-	$efficacite=(((int)$row[8])/42)*100;
+	   $efficacite=(((int)$row[8])/42)*100;
 	
-	$efficience=(((int)$row[9])/42)*100;
+    	$efficience=(((int)$row[9])/42)*100;
 
-	DB::table('indicatorsproj_value')->insert([
-	'projects_id' =>$projects->id,
-	 'value' => $efficacite, 
-	 'target' => '97',
-'indicatorsproj_id'=>$indicator3->id,
-	  'created_at'=>$row[0],
-	  ]);
-	  DB::table('indicatorsproj_value')->insert([
-		'projects_id' =>$projects->id,
-		 'value' => $efficience, 
-		 'target' => '97',
-	'indicatorsproj_id'=>$indicator4->id,
+		DB::table('indicatorsproj_value')
+		->insert([ 'projects_id' =>$projects->id,
+	     'value' => $efficacite, 
+	     'target' => '97',
+         'indicatorsproj_id'=>$indicator3->id,
+	     'created_at'=>$row[0],
+	      ]);
+	  DB::table('indicatorsproj_value')
+	     ->insert(['projects_id' =>$projects->id,
+		  'value' => $efficience, 
+		  'target' => '97',
+	      'indicatorsproj_id'=>$indicator4->id,
 		  'created_at'=>$row[0],
 		  ]);
-		}
-		}
+	}
+ }
     return redirect()->route('indicators.index')
     ->with('success','Les données a été enregistrés avec succées.');
+}
+
+public function importerExcelcollabo(Request $request)
+{
+	
+  // Include PHPExcel_IOFactory (EXCEL)
+
+	$inputFileName = Input::file('import_file')->getRealPath();
+
+	// Read your Excel workbook
+	try {
+		$inputFileType = PHPExcel_IOFactory::identify($inputFileName);
+		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
+		$objPHPExcel = $objReader->load($inputFileName);
+		}
+		 catch(Exception $e) 
+		 {
+		die('Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
+	     }
+
+	// Get worksheet dimensions
+	$sheet = $objPHPExcel->getSheet(0); 
+	$highestRow = $sheet->getHighestRow(); 
+	$highestColumn = $sheet->getHighestColumn();
+
+	// Read all rows of data into an array
+
+	$rows = $sheet->rangeToArray('B5:'.$highestColumn.$highestRow, NULL, TRUE, TRUE);
+
+	// Loop through each row of the worksheet in turn
+ foreach ($rows as $row)
+ { 
+		// ** Show row data array 
+		$users=DB::table('users')->where('name',$row[2])->first();
+		$projects=DB::table('projects')->where('project_name',$row[2])->first();
+		$indicator=DB::table('indicatorusers')->where('name','OTD')->first();
+		$indicator2=DB::table('indicatorusers')->where('name','RFT')->first();
+		$indicator3=DB::table('indicatorusers')->where('name','Efficacité')->first();
+		$indicator4=DB::table('indicatorusers')->where('name','Efficience')->first();
+
+    if($row[3] > 0){
+
+		$val_otd=(((int)$row[3]-(int)$row[6])/(int)$row[3])*100;
+		$val_rft=(((int)$row[3]-(int)$row[4])/(int)$row[3])*100;
+
+	  DB::table('indicatorsproj_indicatorsusers_valuevalue')
+		   ->insert(['projects_id' =>$projects->id,
+		  'value' => $val_otd, 
+		  'target' => $row[4],
+          'indicatorsproj_id'=>$indicator->id,
+		  'created_at'=>$row[0],
+		  ]);
+	 DB::table('indicatorsusers_value')
+		   ->insert(['projects_id' =>$projects->id,
+		  'value' => $val_rft, 
+		  'target' => $row[5],
+	      'indicatorsproj_id'=>$indicator2->id,
+		  'created_at'=>$row[0],
+		 ]);
+	}
+				  
+else if ($row[8] > 0)
+   {
+
+     $efficacite=(((int)$row[8])/42)*100;
+
+     $efficience=(((int)$row[9])/42)*100;
+
+     DB::table('indicatorsusers_value')
+         ->insert(['users_id' =>$users->id,
+	        'projects_id' =>$projects->id,
+            'value' => $efficacite, 
+            'target' => '97',
+            'indicatorsproj_id'=>$indicator3->id,
+            'created_at'=>$row[0],
+            ]);
+     DB::table('indicatorsusers_value') 
+         ->insert(['users_id' =>$users->id,
+	        'projects_id' =>$projects->id,
+	        'value' => $efficience, 
+	        'target' => '97',
+            'indicatorsproj_id'=>$indicator4->id,
+	        'created_at'=>$row[0],
+	         ]);
+    }
+}
+return redirect()->route('indicators.index')
+->with('success','Les données a été enregistrés avec succées.');
 }
 }

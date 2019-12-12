@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\indicatorsproc;
 use Illuminate\Http\Request;
-
+use Carbon\Carbon;
+use Validator,Redirect,Response,File;
+use DB;
+use Gate;
 
 class IndicatorsprocController extends Controller
 {
@@ -15,22 +18,14 @@ class IndicatorsprocController extends Controller
      */
     public function index()
     {
+        $processes=DB::table('processes')
+        ->select('processes.name','processes.id')
+        ->distinct()
+        ->get();
         $indicprocess=indicatorsproc::orderByRaw('created_at','desc')
         ->paginate(5);
-        return view('indicprocs.index',compact('indicprocess'))
+        return view('indicprocs.index',compact('indicprocess','processes'))
         ->with('i', (request()->input('page', 1) - 1) * 5);
-        
-        
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -41,41 +36,36 @@ class IndicatorsprocController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        request()->validate([
+            'name' => 'required',
+            'detail' => 'required',
+           
+        ]);
+
+
+       indicatorsproc::create($request->all());
+
+
+      return redirect()->route('indicprocs.index')
+                      ->with('success','projet ajouté avec succès.');
     }
 
+ 
+ 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\indicatorsproc  $indicatorsproc
-     * @return \Illuminate\Http\Response
-     */
-    public function show(indicatorsproc $indicatorsproc)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\indicatorsproc  $indicatorsproc
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(indicatorsproc $indicatorsproc)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update the specified resource  in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\indicatorsproc  $indicatorsproc
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, indicatorsproc $indicatorsproc)
-    {
-        //
+    public function update(Request $request)
+    {       $indicatorsproc = indicatorsproc::findOrFail($request->indicator_id);
+            $indicatorsproc->update($request->all());
+           
+            return redirect()->route('indicprocs.index')
+            ->with('success','project  mis à jour avec succès');
     }
 
     /**
@@ -84,8 +74,12 @@ class IndicatorsprocController extends Controller
      * @param  \App\indicatorsproc  $indicatorsproc
      * @return \Illuminate\Http\Response
      */
-    public function destroy(indicatorsproc $indicatorsproc)
+    public function destroy(Request $request)
     {
-        //
+          $indicatorsproc = indicatorsproc::findOrFail($request->indicator_id);
+          $indicatorsproc->delete();
+    
+            return redirect()->route('indicprocs.index')
+                            ->with('success','Indicateur supprimé avec succès');
     }
 }

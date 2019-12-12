@@ -4,18 +4,18 @@
 <div class="row">
     <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 <div class="col-lg-12">
-     <h2 class="card-title">Process Indicators</h2>  
+     <h2 class="card-title">Les indicateurs des projets</h2>  
 </div>
 
 </div>
     
 </div>
 <div class="-sm m-0 float-right">
-                @can('process-create')
+              
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
  	Ajouter
 </button>
-                @endcan
+          
                 </div>
 
     @if ($message = Session::get('success'))
@@ -29,19 +29,19 @@
     <table id="table"  class="table table-bordered">
         <tr>
             <th>No</th>
-            <th>Indicators</th>
+            <th>Indicateurs</th>
             <th>Details</th>
             <th width="280px">Actions</th>
         </tr>
-	    @foreach ($indicprocess as $indic)
+	    @foreach ($indicproj as $indic)
 	    <tr>
 	        <td>{{ ++$i }}</td>
 	        <td >{{ $indic->name }}</td>
 	        <td >{{ $indic->detail }}</td>
 	        <td>
-                <button class="btn btn-info" data-myname="{{$indic->name}}" data-mydetail="{{$indic->detail}}" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#edit">Edit</button>
+                <button class="btn btn-info" data-myname="{{$indic->name}}" data-mydetail="{{$indic->detail}}" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#edit">Modifier</button>
 									/
-									<button class="btn btn-danger" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#delete">Delete</button>
+									<button class="btn btn-danger" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#delete">Supprimer</button>
 								</td>
 	        </td>
 	    </tr>
@@ -49,7 +49,7 @@
     </table>
 
     </div>
-    {!! $indicprocess->links() !!}
+    {!! $indicproj->links() !!}
   
     <script> /*
 $(document).ready(function () {
@@ -73,10 +73,13 @@ $(document).ready(function () {
                        rIndex = this.rowIndex;
                          document.getElementById("name").value = this.cells[1].innerHTML;
                          document.getElementById("detail").value = this.cells[2].innerHTML;
-                    };
+                    };*/
            
-}*/
+}
 </script>
+
+    
+      
 	<!-- Button trigger modal -->
 
 
@@ -84,18 +87,20 @@ $(document).ready(function () {
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"> 
-        <h4 class="modal-title" id="myModalLabel">Add new indicator</h4>
+      <div class="modal-header">
+        
+        <h4 class="modal-title" id="myModalLabel">Ajouter un nouvelle indicateur</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
-      <form action="{{route('indicprocs.store')}}" method="post">
+      <form action="{{route('indicprojs.store')}}" method="post">
       		{{csrf_field()}}
 	      <div class="modal-body">
-          @include('indicprocs.form')
+          @include('indicprojs.form')
+                      
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	        <button type="submit" class="btn btn-primary">Submit</button>
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+	        <button type="submit" class="btn btn-primary">Sauvegarder</button>
 	      </div>
       </form>
     </div>
@@ -107,20 +112,20 @@ $(document).ready(function () {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-      <h4 class="modal-title" id="myModalLabel">Edit indicator </h4>
+      <h4 class="modal-title" id="myModalLabel">Modifier un indicateur </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         
       </div>
-      <form action="{{route('indicprocs.update','test')}}" method="post">
+      <form action="{{route('indicprojs.update','test')}}" method="post">
       		{{method_field('patch')}}
       		{{csrf_field()}}
 	      <div class="modal-body">
 	      		<input type="hidden" name="indicator_id" id="indic_id" value="">
-                  @include('indicprocs.form')
+                  @include('indicprojs.form')
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	        <button type="submit" class="btn btn-primary">Submit</button>
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+	        <button type="submit" class="btn btn-primary">Sauvegarder</button>
 	      </div>
       </form>
     </div>
@@ -133,21 +138,21 @@ $(document).ready(function () {
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title text-center" id="myModalLabel">Confirm</h4>
+        <h4 class="modal-title text-center" id="myModalLabel">Confirmer</h4>
       </div>
-      <form action="{{route('indicprocs.destroy','test')}}" method="post">
+      <form action="{{route('indicprojs.destroy','test')}}" method="post">
       		{{method_field('delete')}}
       		{{csrf_field()}}
 	      <div class="modal-body">
 				<p class="text-center">
-        Are you sure you want to delete this?
+                Êtes-vous sûr de vouloir supprimer ceci?
 				</p>
 	      		<input type="hidden" name="indicator_id" id="indicd_id" value="">
 
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-success" data-dismiss="modal">No, Close</button>
-	        <button type="submit" class="btn btn-warning">Yes, Delete</button>
+	        <button type="button" class="btn btn-success" data-dismiss="modal">Non, Annuler</button>
+	        <button type="submit" class="btn btn-warning">Oui, Supprimer</button>
 	      </div>
       </form>
     </div>

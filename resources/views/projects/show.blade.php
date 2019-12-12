@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-lg-12 margin-tb">
             <div class="pull-left">
-                <h2> Afficher project</h2>
+                <h2> Show project</h2>
             </div>
             <div class="pull-right">
                 <a class="btn btn-primary" href="{{ route('projects.index') }}"> Back</a>
@@ -17,13 +17,13 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
-                <strong>processuses:</strong>
+                <strong>process:</strong>
                 {{ $project->proc_id }}
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
-                <strong>Projets:</strong>
+                <strong>Project:</strong>
                 {{ $project->project_name }}
             </div>
         </div>

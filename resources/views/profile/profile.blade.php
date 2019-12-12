@@ -23,9 +23,11 @@
             <div class="card card-primary card-outline">
               <div class="card-body box-profile">
                 <div class="text-center">
-                <img class="profile-user-img img-fluid img-circle"
-                       src="../../dist/img/user.jpg"
-                       alt="User profile picture">
+                @if ("/storage/images/{{ Auth::user()->picture }}")
+                <img class="profile-user-img img-fluid img-circle"  src="{{ Auth::user()->picture }}"/>
+    @else
+            <p>No image found</p>
+    @endif 
                 </div>
                 <h3 class="profile-username text-center"> {{ Auth::user()->name }} </h3>
                 <p class="text-muted text-center">{{Auth::user()->role}}</p>
@@ -34,7 +36,7 @@
                     <b>Email : </b> <a class="float-right">{{Auth::user()->email}}</a>
                   </li>
                   <li class="list-group-item">
-                    <b>Numero de telephone :</b> <a class="float-right">{{Auth::user()->phone_number}}</a>
+                    <b>Phone :</b> <a class="float-right">{{Auth::user()->phone_number}}</a>
                   </li>
                 </ul>
               </div>
@@ -48,9 +50,9 @@
             <div class="card">
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
-                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Indicateurs</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab"> Projets</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Parametres</a></li>
+                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Indicators</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab"> Projects</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Parameters</a></li>
                 </ul>
               </div><!-- /.card-header -->
               <div class="card-body">
@@ -181,7 +183,7 @@
      <div class="col-md-6">
         <div class="card card-default">
               <div class="card-header">
-                <h3 class="card-title"> Les projets de processus <?=$proc['name'] ?>   </h3>
+                <h3 class="card-title">Projects of process <?=$proc['name'] ?>   </h3>
               </div>
                   <!-- /.card-header -->
               <div class="card-body"> 
@@ -205,7 +207,7 @@
 
      <div class="card">
               <div class="card-header">
-                 <h3 class="card-title">Les collaborateurs du projet <?=$proj['project_name'] ?> </h3> 
+                 <h3 class="card-title">Users works in project <?=$proj['project_name'] ?> </h3> 
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
@@ -237,17 +239,23 @@
             <!-- container-fluid -->
 	    	<div class="container-fluid">
 		      	<div class="navbar-header">
-			    	<a class="navbar-brand" href="#">Ajouter une image</a>
+			    	<a class="navbar-brand" href="#">Change profile picture</a>
 		      	</div>
 		   </div>
         <!-- /.container-fluid -->
          <!-- container -->
     	<div class="container">
-	    	<form style="border: 4px solid #a1a1a1;margin-top: 15px;padding: 10px;"action="{{ url('profile.import') }}/{{ Auth::user()->id}}" class="form-horizontal" method="post" enctype="multipart/form-data">
-          {{ csrf_field() }}
-		    	<input type="file" name="import_file" />
-		    	<button type="submit" class="btn btn-primary">Importer</button>
-	    	</form>
+      <div class="row justify-content-center">
+            <form action="{{ route('profile.profile.update') }}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <input type="file" class="form-control-file" name="picture" id="pictureFile" aria-describedby="fileHelp">
+                    <small id="fileHelp" class="form-text text-muted">  Please download a valid image file. The size of the image should not exceed 2 MB.</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
      	</div>
         <!-- /.container -->
   	</nav>

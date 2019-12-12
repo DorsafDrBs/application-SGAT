@@ -44,7 +44,7 @@
 		        </div>
 		    </div>
             <div class="form-group col">
-								  <label>familles:
+								  <label>Family:
             <select  name="familles_id" class="form-control select2" style="width: 300%;">
                  @foreach($familles as $famille)
                  <option value="{{$famille->id}}">{{$famille->famille}}</option>

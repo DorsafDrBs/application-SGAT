@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-lg-12 margin-tb">
             <div class="pull-left">
-                <h2>Modifier un projet</h2>
+                <h2>Edit project</h2>
             </div>
             <div class="pull-right">
                 <a class="btn btn-primary" href="{{ route('projects.index') }}"> Back</a>
@@ -17,7 +17,7 @@
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <strong>Whoops!</strong> Il y a eu quelques problèmes avec votre contribution.<br><br>
+            <strong>Whoops!</strong> There were some problems with your input.<br><br>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -34,7 +34,7 @@
 
          <div class="row">
 		    <div class="col-xs-12 col-sm-12 col-md-12">
-            <label>Processuses:
+            <label>Process:
             <select  name="proc_id" class="form-control select2" style="width: 300%;">
                  @foreach($processes as $process)
                  <option value="{{$process->id}}">{{$process->name}}</option>

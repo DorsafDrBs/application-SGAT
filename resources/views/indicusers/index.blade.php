@@ -4,18 +4,16 @@
 <div class="row">
     <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 <div class="col-lg-12">
-     <h2 class="card-title">Process Indicators</h2>  
+     <h2 class="card-title">Indicators of users</h2>  
 </div>
 
 </div>
     
 </div>
 <div class="-sm m-0 float-right">
-                @can('process-create')
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
- 	Ajouter
-</button>
-                @endcan
+              
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">	Create</button>
+                
                 </div>
 
     @if ($message = Session::get('success'))
@@ -33,7 +31,7 @@
             <th>Details</th>
             <th width="280px">Actions</th>
         </tr>
-	    @foreach ($indicprocess as $indic)
+	    @foreach ($indicusers as $indic)
 	    <tr>
 	        <td>{{ ++$i }}</td>
 	        <td >{{ $indic->name }}</td>
@@ -51,47 +49,21 @@
     </div>
     {!! $indicprocess->links() !!}
   
-    <script> /*
-$(document).ready(function () {
-    $(".open-AddBookDialog").click(function () {
-        var a = $(this);
-
-  var data-id = a.data('data-id')
-
-  var modal = $('#modal')
-  modal.find('#id').text(data-id)
-  modal.find('#delete_btn_modal').attr('data-item_id',item_id)
-  modal.modal('show');
-    });
-});
- var table = document.getElementById('table');
-                
-                for(var i = 1; i < table.rows.length; i++)
-                {
-                    table.rows[i].onclick = function()
-                    { 
-                       rIndex = this.rowIndex;
-                         document.getElementById("name").value = this.cells[1].innerHTML;
-                         document.getElementById("detail").value = this.cells[2].innerHTML;
-                    };
-           
-}*/
-</script>
-	<!-- Button trigger modal -->
-
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"> 
-        <h4 class="modal-title" id="myModalLabel">Add new indicator</h4>
+      <div class="modal-header">
+        
+        <h4 class="modal-title" id="myModalLabel">Add New Indicator </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
-      <form action="{{route('indicprocs.store')}}" method="post">
+      <form action="{{route('indicusers.store')}}" method="post">
       		{{csrf_field()}}
 	      <div class="modal-body">
-          @include('indicprocs.form')
+          @include('indicusers.form')
+                      
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -111,12 +83,12 @@ $(document).ready(function () {
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         
       </div>
-      <form action="{{route('indicprocs.update','test')}}" method="post">
+      <form action="{{route('indicusers.update','test')}}" method="post">
       		{{method_field('patch')}}
       		{{csrf_field()}}
 	      <div class="modal-body">
 	      		<input type="hidden" name="indicator_id" id="indic_id" value="">
-                  @include('indicprocs.form')
+                  @include('indicusers.form')
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -133,9 +105,9 @@ $(document).ready(function () {
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title text-center" id="myModalLabel">Confirm</h4>
+        <h4 class="modal-title text-center" id="myModalLabel">Confirme</h4>
       </div>
-      <form action="{{route('indicprocs.destroy','test')}}" method="post">
+      <form action="{{route('indicusers.destroy','test')}}" method="post">
       		{{method_field('delete')}}
       		{{csrf_field()}}
 	      <div class="modal-body">
@@ -146,7 +118,7 @@ $(document).ready(function () {
 
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-success" data-dismiss="modal">No, Close</button>
+	        <button type="button" class="btn btn-success" data-dismiss="modal">No, Cansel</button>
 	        <button type="submit" class="btn btn-warning">Yes, Delete</button>
 	      </div>
       </form>

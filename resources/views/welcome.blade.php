@@ -47,7 +47,7 @@
 					    	<div class="icon d-flex justify-content-center align-items-center"><span class="icon-phone2"></span></div>
 						    <div class="text">
 						    	<span>Contact</span>
-						    	<span>Contacter nous: +216 71 857 601</span>
+						    	<span>Contact us: +216 71 857 601</span>
 						    </div>
 					        </div>
 			             </div>
@@ -69,7 +69,7 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent-555">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link"id="accueil" href="{{ url('/') }}">Accueill
+        <a class="nav-link"id="accueil" href="{{ url('/') }}">Home
           <span class="sr-only">(current)</span>
         </a>
       </li>
@@ -77,11 +77,11 @@
         <a class="nav-link" href="#service">Services</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('login') }}">Se connecter</a>
+        <a class="nav-link" href="{{ route('login') }}">Log In</a>
       </li>
       @if (Route::has('register'))
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('register') }}">S'inscrire</a>
+        <a class="nav-link" href="{{ route('register') }}">Register</a>
       </li>
       @endif
        @endauth
@@ -96,8 +96,8 @@
         <div class="container">
           <div class="row no-gutters slider-text align-items-center justify-content-start" data-scrollax-parent="true">
           <div class="col-md-7 ftco-animate">
-          	<span class="subheading">Bienvenue au SOGECLAIR Aerospace Tunisie</span>
-            <h1 class="mb-4">Nous sommes les meilleurs </h1>
+          	<span class="subheading">Welcome to SOGECLAIR Aerospace Tunisie</span>
+            <h1 class="mb-4"> </h1>
           
           </div>
         </div>
@@ -109,8 +109,8 @@
         <div class="container">
           <div class="row no-gutters slider-text align-items-center justify-content-start" data-scrollax-parent="true">
           <div class="col-md-7 ftco-animate">
-          	<span class="subheading">Bienvenue au SOGECLAIR Aerospace Tunisie</span>
-            <h1 class="mb-4">Vous obtenez toujours le meilleur service</h1>
+          	<span class="subheading">Welcome to SOGECLAIR Aerospace Tunisie</span>
+            <h1 class="mb-4"></h1>
             
           </div>
         </div>
@@ -126,14 +126,14 @@
 							<div class="img" style="background-image: url(images/visuel_sogeclair.jpg); border"></div>
 							<div class="text">
 								<h3>SOGECLAIR Aerospace Tunisie</h3>
-								<p>Crée en 2009, SOGECLAIR Aerospace Tunisie fournit des équipes expérimentées dédiées à vos projets. Qu’ils soient experts, ingénieurs, techniciens, développeurs ou attachés à notre service de support, nos personnels sont tous hautement qualifiés. Ils se réunissent sur des valeurs essentielles telles que le respect des engagements, un goût pour un défi, la satisfaction et l’atteinte des objectifs de nos clients</p>
+								<p>Created in 2009, SOGECLAIR Aerospace Tunisia provides experienced teams dedicated to your projects. Whether they are experts, engineers, technicians, developers or attachés to our support service, our staff are all highly qualified. They meet on essential values such as the respect of the commitments, a taste for a challenge, the satisfaction and the achievement of the objectives of our customers</p>
 								
 							</div>
 						</div>
 					</div>
 					<div class="col-md-7 wrap-about pr-md-4 ftco-animate">
-          	<h2 class="mb-4">Expertise multidisciplinaire de pointe</h2>
-						<p>SOGECLAIR Aerospace propose des compétences en conception, intégration, simulation numérique, certification, installation de systèmes, configuration et gestion de projet, contrôle et coordination de la sous-traitance, production et support de projets à long terme.</p>
+          	<h2 class="mb-4">Advanced multidisciplinary expertise</h2>
+						<p>SOGECLAIR Aerospace offers skills in design, integration, numerical simulation, certification, installation of systems, configuration and project management, control and coordination of outsourcing, production and long-term project support.</p>
 						<div class="row mt-5">
 						
 					<div class="col-lg-6">
@@ -164,7 +164,7 @@
     	<div class="container">
     		<div class="row justify-content-center mb-5">
           <div class="col-md-10 text-center heading-section heading-section-white ftco-animate">
-            <h2 class="mb-0">Vous obtenez toujours les meilleurs services</h2>
+            <h2 class="mb-0">You always get the best services</h2>
           </div>
         </div>	
     	</div>
@@ -180,7 +180,7 @@
 		            	<div class="icon"><span class="flaticon-doctor"></span></div>
 		              <div class="text">
 		                <strong class="number" data-number="12">0</strong>
-		                <span>Processus </span>
+		                <span>Processes </span>
 		              </div>
 		            </div>
 		          </div>
@@ -189,7 +189,7 @@
 		            	<div class="icon"><span class="flaticon-doctor"></span></div>
 		              <div class="text">
 		                <strong class="number" data-number="80">0</strong>
-		                <span> Projets</span>
+		                <span> Projects</span>
 		              </div>
 		            </div>
 		          </div>
@@ -198,7 +198,7 @@
 		            	<div class="icon"><span class="flaticon-doctor"></span></div>
 		              <div class="text">
 		                <strong class="number" data-number="35">0</strong>
-		                <span>Utilisateurs</span>
+		                <span>Users</span>
 		              </div>
 		            </div>
 		          </div>
@@ -213,8 +213,8 @@
 			<div class="container">
 				<div class="row justify-content-center mb-5 pb-2">
           <div class="col-md-8 text-center heading-section ftco-animate">
-            <h2 class="mb-4" id="service">Nos meilleurs services</h2>
-            <p>SOGECLAIR Aerospace Tunisie est organisé autour de quatre domaines d’expertise afin de couvrir l’ensemble du processus Industriel, du développement à la production série :</p>
+            <h2 class="mb-4" id="service">Our best services</h2>
+            <p>SOGECLAIR Aerospace Tunisia is organized around four areas of expertise to cover the entire industrial process, from development to production series :</p>
           </div>
         </div>
 				<div class="row no-gutters">
@@ -223,7 +223,7 @@
 							<div class="icon mt-2 d-flex justify-content-center align-items-center"><span class="flaticon-search-engine"></span></div>
 							<div class="text media-body">
 								<h3>Innovation</h3>
-								<p> SOGECLAIR Aerospace Tunisie  propose un service d'innovation adapté a ses besoins.</p>
+								<p>SOGECLAIR Aerospace Tunisia offers an innovation service adapted to its needs.</p>
 							</div>
 					
 					</div>
@@ -242,9 +242,7 @@
 							<div class="icon mt-2 d-flex justify-content-center align-items-center"><span class="flaticon-business"></span></div>
 							<div class="text media-body">
 								<h3> 	Aérostucture-Conception de structure primaire et secondaire</h3>
-								<p>SOGELAIR Aerospace Tunisie propose, du développement à la production en série, 
-									la réalisation du Dossier de Définition, de la phase d’architecture
-									à la réalisation des plans (2D ou 3D) et des nomenclatures associées pour la conception de solutions complexes de structure primaires et secondaires en Métalliques et Composites.</p>
+								<p>SOGELAIR Aerospace Tunisie offers, from development to mass production, the realization of the Definition File, the architecture phase the realization of 2D or 3D plans and associated nomenclatures for the design of complex primary and secondary structural solutions in Metallic and Composite.</p>
 							</div>
 						</div>
 					</div>
@@ -253,8 +251,8 @@
 							<div class="icon mt-2 d-flex justify-content-center align-items-center"><span class="flaticon-insurance"></span></div>
 							<div class="text media-body">
 								<h3> 	Aérostructure-Calcul statique, fatigue, thermique, vibratoire </h3>
-								<p>SOGECLAIR AEROSPACE Tunisie réalise plusieurs types de calculs : Calculs statiques
-									 , Calcul de fatigue des pièces F&DT, Modèles éléments finis en utilisant les logiciel de calcul : PATRAN, NASRAN, SAMCEF, ANSYS, Abaqus.</p>
+								<p>SOGECLAIR AEROSPACE Tunisia performs several types of calculations: Static calculations
+, F & DT Parts Fatigue Calculation, Finite Element Models using the calculation software: PATRAN, NASRAN, SAMCEF, ANSYS, Abaqus.</p>
 							</div>
 						</div>
 					</div>
@@ -263,7 +261,7 @@
 							<div class="icon mt-2 d-flex justify-content-center align-items-center"><span class="flaticon-money"></span></div>
 							<div class="text media-body">
 								<h3> 	Installation Systèmes mécaniques et électriques </h3>
-								<p>SOGECLAIR Aerospace Tunisie propose, du développement à la production série, la réalisation des Dossiers de Définition, de la phase d’architecture à la réalisation des plans (2D ou 3D) .</p>
+								<p>SOGECLAIR Aerospace Tunisia offers, from development to serial production, the realization of the definition files, from the architecture phase to the realization of the plans (2D or 3D).</p>
 							</div>
 						</div>
 					</div>
@@ -272,7 +270,7 @@
 							<div class="icon mt-2 d-flex justify-content-center align-items-center"><span class="flaticon-rating"></span></div>
 							<div class="text media-body">
 								<h3>  	Réparation de pièces de structure </h3>
-								<p> Les réparations s’appliquent sur tous les avions en service utilisant les normes et les méthodes dictés dans différents manuels (SRM, AMM, IPC.).</p>
+								<p> The repairs apply to all aircraft in service using the standards and methods dictated in different manuals (SRM, AMM, IPC.).</p>
 							</div>
 						</div>
 					</div>
@@ -281,7 +279,7 @@
 							<div class="icon mt-2 d-flex justify-content-center align-items-center"><span class="flaticon-search-engine"></span></div>
 							<div class="text media-body">
 								<h3>Gestion de configuration</h3>
-								<p> Du besoin du Client à la livraison du Produit, SOGECLAIR Aerospace Tunisie vous propose un service adapté à vos besoins.</p>
+								<p> From the Customer's need to the delivery of the Product, SOGECLAIR Aerospace Tunisia offers a service tailored to your needs.</p>
 							</div>
 						</div>
 					</div>
@@ -296,7 +294,7 @@
     	<div class="container">
     		<div class="row justify-content-center">
           <div class="col-lg-9 col-md-8 d-flex align-items-center heading-section heading-section-white ftco-animate">
-            <h2 class="mb-3 mb-md-0">Vous obtenez toujours le meilleur service</h2>
+            <h2 class="mb-3 mb-md-0">You always get the best service</h2>
           </div>
           <div class="col-lg-3 col-md-4 ftco-animate">
 
@@ -309,8 +307,8 @@
 			<div class="row justify-content-center mb-5 pb-2">
 			<div class="col-md-8 text-center heading-section ftco-animate">
 			<span class="subheading">Organisation</span>
-			<h2 class="mb-4">Organisation de l'entreprise</h2>
-			<p>Notre savoir s’articule autour de 4 axes complémentaires : organisation, communication interne, formation et audits.</p>
+			<h2 class="mb-4">Business organization</h2>
+			<p>Our knowledge is articulated around 4 complementary axes: organization, internal communication, training and audits.</p>
 			</div>
 			</div>
 			<div class="row">
@@ -320,8 +318,8 @@
 			<span class="flaticon-drilling"></span>
 			</div>
 			<div class="media-body p-2 mt-3">
-			<h3 class="heading">Notre Expérience</h3>
-			<p>SOGECLAIR Aerospace Tunisie vous fait bénéficier de son savoir faire, de son expérience et de ses compétences pour rendre votre organisation, plus vivante, plus communicante, plus créative !.</p>
+			<h3 class="heading">Our Experience</h3>
+			<p>SOGECLAIR Aerospace Tunisia gives you the benefit of its know-how, its experience and its skills to make your organization more alive, more communicative, more creative !.</p>
 			</div>
 			</div>
 			</div>
@@ -331,9 +329,8 @@
 			<span class="flaticon-tooth"></span>
 			</div>
 			<div class="media-body p-2 mt-3">
-			<h3 class="heading">Notre Polyvalence</h3>
-			<p>Quel que soit la taille de votre entreprise, SOGECLAIR Aerospace Tunisie répond à votre besoin de dynamiser la performance de vos processus et de votre organisation, cela dans tous les métiers et secteurs de votre entreprise.
-				</p>
+			<h3 class="heading">Our Polyvalence</h3>
+			<p> Whatever the size of your company, SOGECLAIR Aerospace Tunisia meets your need to boost the performance of your processes and your organization, in all trades and sectors of your company.</p>
 			</div>
 			</div>
 			</div>
@@ -343,8 +340,8 @@
 			<span class="flaticon-dental-floss"></span>
 			</div>
 			<div class="media-body p-2 mt-3">
-			<h3 class="heading">Notre Pragmatisme</h3>
-			<p>	Notre principale préoccupation est l’atteinte de vos objectifs, en respectant vos contraintes (planning, budget,…) et le potentiel de vos équipes.</p>
+			<h3 class="heading">Our Pragmatisme</h3>
+			<p>Our main concern is the achievement of your objectives, respecting your constraints (planning, budget, ...) and the potential of your teams.</p>
 			</div>
 			</div>
 			</div>
@@ -354,8 +351,8 @@
 			<span class="flaticon-shiny-tooth"></span>
 			</div>
 			<div class="media-body p-2 mt-3">
-			<h3 class="heading">Notre Performance</h3>
-			<p>Par l’intervention de SOGECLAIR Aerospace Tunisie sur votre projet, vous réaliserez un changement culturel rapide et des gains financiers mesurables, votre retour sur investissement est immédiat !</p>
+			<h3 class="heading">Our Performance</h3>
+			<p>By the intervention of SOGECLAIR Aerospace Tunisia on your project, you will realize a rapid cultural change and measurable financial gains, your return on investment is immediate!</p>
 			</div>
 			</div>
 			</div>
@@ -365,7 +362,7 @@
 			<div class="container">
 			<div class="row">
 					<div class="col-lg-9 col-md-8 d-flex align-items-center heading-section heading-section-white ftco-animate">
-							<h2 class="mb-3 mb-md-0">Vous obtenez toujours le meilleur service</h2>
+							<h2 class="mb-3 mb-md-0">You always get the best service</h2>
 					  </div>
 			</div>
 			</div>
@@ -378,11 +375,11 @@
                 
               <div class="col-md-6 col-lg-3">
                 <div class="ftco-footer-widget mb-5">
-                    <h2 class="ftco-heading-2">SOGECLAIR Aerospace Tunisie</h2>
+                    <h2 class="ftco-heading-2">SOGECLAIR Aerospace Tunisia</h2>
                     <div class="block-23 mb-3">
                       <ul>
-                        <li><span class="icon icon-map-marker"></span><span class="text">Pôle Elgazala des technologies de la communication
-                            Route de Raoud km 3.5
+                        <li><span class="icon icon-map-marker"></span><span class="text">Elgazala Cluster of Communication Technologies
+                            Route of Raoud km 3.5
                             Cité Elgazala
                             2083 ARIANA
                             TUNISIA</span></li>
@@ -404,7 +401,7 @@
                           <div class="ftco-footer-widget mb-5 ml-md-4">
                             <h2 class="ftco-heading-2">Liens</h2>
                             <ul class="list-unstyled">
-                              <li><a href="#accueil"><span class="ion-ios-arrow-round-forward mr-2"></span>Accueil</a></li>
+                              <li><a href="#accueil"><span class="ion-ios-arrow-round-forward mr-2"></span>Home</a></li>
                               <li><a href="#service"><span class="ion-ios-arrow-round-forward mr-2"></span>Services</a></li>
                               
                             </ul>
@@ -415,7 +412,7 @@
                         <div class="col-md-12 text-center">
               
                           <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                Copyright &copy;<script>document.write(new Date().getFullYear());</script>Tous droits réservés | par  <a href="http://sogeclairaerospace.com/tunisie" target="_blank">SOGECLAIR Aerospace Tunisie</a>
+                Copyright &copy;<script>document.write(new Date().getFullYear());</script>All rights reserved | through  <a href="http://sogeclairaerospace.com/tunisie" target="_blank">SOGECLAIR Aerospace Tunisia</a>
                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
                         </div>
                       </div>

@@ -14,19 +14,11 @@ class IndicatorsprojController extends Controller
      */
     public function index()
     {
-        //
+        $indicproj=indicatorsproj::orderByRaw('created_at','desc')
+        ->paginate(5);
+        return view('indicprojs.index',compact('indicproj'))
+        ->with('i', (request()->input('page', 1) - 1) * 5);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -35,29 +27,33 @@ class IndicatorsprojController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+      
+        request()->validate([
+            'name' => 'required',
+            'detail' => 'required',
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\indicatorsproj  $indicatorsproj
-     * @return \Illuminate\Http\Response
-     */
-    public function show(indicatorsproj $indicatorsproj)
-    {
-        //
-    }
 
+       indicatorsproj::create($request->all());
+
+
+      return redirect()->route('indicprojs.index')
+                      ->with('success','projet ajouté avec succès.');
+    }
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\indicatorsproj  $indicatorsproj
      * @return \Illuminate\Http\Response
      */
-    public function edit(indicatorsproj $indicatorsproj)
-    {
-        //
+    public function edit(Request $request)
+    {       $indicatorsproj = indicatorsproj::findOrFail($request->indicator_id);
+       
+            $indicatorsproj->update($request->all());
+           
+
+            return redirect()->route('indicprojs.index')
+            ->with('success','project  mis à jour avec succès');
     }
 
     /**
@@ -67,10 +63,15 @@ class IndicatorsprojController extends Controller
      * @param  \App\indicatorsproj  $indicatorsproj
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, indicatorsproj $indicatorsproj)
-    {
-        //
-    }
+    public function update(Request $request)
+    {       $indicatorsproj = indicatorsproj::findOrFail($request->indicator_id);
+       
+        $indicatorsproj->update($request->all());
+       
+
+        return redirect()->route('indicprojs.index')
+        ->with('success','project  mis à jour avec succès');
+}
 
     /**
      * Remove the specified resource from storage.
@@ -78,8 +79,13 @@ class IndicatorsprojController extends Controller
      * @param  \App\indicatorsproj  $indicatorsproj
      * @return \Illuminate\Http\Response
      */
-    public function destroy(indicatorsproj $indicatorsproj)
+    public function destroy(Request $request)
     {
-        //
+          $indicatorsproj = indicatorsproj::findOrFail($request->indicator_id);
+          $indicatorsproj->delete();
+    
+            return redirect()->route('indicprojs.index')
+                            ->with('success','Indicateur supprimé avec succès');
+      
     }
 }
