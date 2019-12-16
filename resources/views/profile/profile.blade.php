@@ -71,23 +71,15 @@
 								  </ul> 
                 </form>
 								</div>
-                
+               
+						
                 <?php foreach($data as $project) { ?>
                  
-                <?php foreach($project['indics'] as $indic) { ?> 
-                  <div class="col-md-6">
-            <div class="card  card-outline">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="fa fa-bar-chart-o"></i>
-                  <?= "{$indic['name']} Projet {$project['project_name']}" ?>
-                </h3>
-                <div class="card-tools">
-                </div>
-              </div>
-              <div class="card-body">
-             
-								<div id="container<?=$indic['idg'] ?>" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+                 <?php foreach($project['indics'] as $indic) { ?> 
+                   <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 demo">    
+                 <div class="demo-container">
+                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bg-white">
+								<div id="container<?=$indic['idg'] ?>"style="min-width: 310px; height: 300px; margin: 0 auto"></div>
 								<script>
 									X = [];
 									Yval = [];
@@ -107,9 +99,10 @@
 										},
 										title: {
 											text: titre // title 
-										},credits: {
-    enabled: false
-  },
+										},
+                    credits: {
+                             enabled: false
+                             },
 										xAxis: [{
 											categories: X, // CREATED AT . IL FAUT SELECTIONNER les noms des mois !!
 											crosshair: true
@@ -166,41 +159,40 @@
 										}]
 									});
 								</script>
-              </div>
-              <!-- /.card-body-->
-            </div> 
-
-            </div> 
-            <!-- /.card -->
+            </div>
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 footer-container"><h3 class="">Logarithmic axis</h3></div>
+								<div class="clearfix"></div>
+							</div>
+			
+					</div>
             <?php }	}	?>
              </div>  
        </div>
      <!-- /.tab-pane -->
- 
-     <!-- The timeline -->         
-      <div class="tab-pane" id="timeline">       
-  <div class="row"><?php foreach($dataproc as $proc) { ?>
-     <div class="col-md-6">
-        <div class="card card-default">
-              <div class="card-header">
-                <h3 class="card-title">Projects of process <?=$proc['name'] ?>   </h3>
-              </div>
-                  <!-- /.card-header -->
-              <div class="card-body"> 
-              <div class="list-group">
-              <?php foreach($proc['projects'] as $proj) { ?>
-                <a  href="#" class="list-group-item list-group-item-action"> <?="'{$proj->project_name}'"?></a>
+       
+           
+     <!-- The timeline -->     
+     <div class="tab-pane" id="timeline">       
+   <div class="row ">
+   
+     
+         <?php foreach($dataproc as $proc) { ?>  
+          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 demo  ">
+            <div class="demo-container ">
+              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 footer-container">
+                <h3> Projects of process <?=$proc['name'] ?> </h3>
+               </div>
+              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bg-white ">
+                <?php foreach($proc['projects'] as $proj) { ?>
+                  <a  href="#" class="list-group-item list-group-item-action"> <?="'{$proj->project_name}'"?></a>
                 <?php }?>
               </div>
-              </div>
-              <!-- /.card-body -->
-        </div>
-         <!-- /.card --> 
-       
-     </div>
-      <!-- /.col -->  <?php }?>
-   </div>
-  <!-- /.row -->
+            </div> 
+          </div>  
+        <?php }?>
+      
+      </div>
+
     <div class="row"> 
      <div class="col-12">
 <?php foreach($datac as $proj) { ?>

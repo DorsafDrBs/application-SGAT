@@ -7,7 +7,10 @@
   <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
   <meta charset="utf-8">
   <!-- Tell the browser to be responsive to screen width -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="HandheldFriendly" content="true">
   <!-- Font Awesome -->
   <link rel="stylesheet"  href="{{ URL::asset('adminlte/plugins/fontawesome-free/css/all.min.css')}}">
   <!-- Ionicons -->

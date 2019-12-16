@@ -26,7 +26,7 @@ class ProfileController extends Controller
 
     public function index(Request $request )
     { // afficher les projet de l'utilisateur connecte
-$id=3;
+        $id=Auth::user()->id;
 $idp=1; 
 $dataproc=array();
          $processes=DB::table('processes')
@@ -65,30 +65,28 @@ $data=array();
 		    ->select('projects.id', 'projects.project_name')
             ->distinct()
             ->get();
-	
 	$fprojs=$request->input("fprojs") ?:array_slice($projs->pluck('id')->toarray(),-1)[0];
 
 	$projects=DB::table('projects')
-->join('processes','processes.id','projects.proc_id')
+         ->join('processes','processes.id','projects.proc_id')
 		 ->select('projects.project_name','projects.id')
 		 ->where('projects.id',$fprojs)
 		 ->distinct()
 		 ->get();
-         
 foreach ($projects as $project)
 	{        // liste des indicators qui existes dans cet project (id, name)
 		$indicators=DB::table('indicatorsusers_value')
 			->join('project_has_users', 'indicatorsusers_value.users_id', '=', 'project_has_users.users_id')
             ->join('indicatorusers', 'indicatorsusers_value.indicatorusers_id', '=', 'indicatorusers.id')
 			->select("indicatorusers.id", "indicatorusers.name")
-			->where('project_has_users.projects_id', $project->id)
+			->where('project_has_users.projects_id',$project->id)
 			->distinct()
 			->get();
 			// ajouter un projet avec son name dans la liste projets + declarer sa liste des indicators (graphes)
             $objpro=array("project_name" => $project->project_name, "indics" => array());
             
 			$indics=array();
-			foreach ($indicators as $ind)
+		foreach ($indicators as $ind)
 			{
 				// selectionner les users avec leurs valeurs & target.., qui sont dans cet $project et dans cet $ind
                 $collabs=DB::table('indicatorsusers_value')
