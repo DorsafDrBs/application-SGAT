@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use App\Http\Controllers\Controller;
@@ -17,7 +17,8 @@ use App\Http\Requests;
 use Carbon\Carbon;
 use Validator,Redirect,Response,File;
 use DB;
-use Image;
+use App\User;
+
 class ProfileController extends Controller
 {  public function __construct()
     {
@@ -144,22 +145,18 @@ return view('profile.profile',
 }
 public function update(Request $request)
     {
-        $request->validate([
-            'picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+       
+    	// Handle the user upload of picture
+    	if($request->hasFile('picture')){
+    		$picture = $request->file('picture');
+    		$filename = time() . '.' . $picture->getClientOriginalExtension();
+    		Image::make($picture)->resize(300, 300)->save( public_path('/uploads/images/' . $filename ) );
+    		$user = Auth::user();
+    		$user->picture = $filename;
+    		$user->save();
+    	}
 
-        $user = Auth::user();
-
-        $pictureName = $user->id.'_picture'.time().'.'.request()->picture->getClientOriginalExtension();
-
-        $request->picture->storeAs('pictures',$pictureName);
-
-        $user->picture = $pictureName;
-        $user->save();
-
-        return back()
-            ->with('success','You have successfully upload image.');
-
- 
+        return redirect()->route('profile.index')
+        ->with('success','picture updated successfully.');
     }
 }

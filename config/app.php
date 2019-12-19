@@ -163,6 +163,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider :: class,
         Collective\Html\HtmlServiceProvider ::class, 
+        Intervention\Image\ImageServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -175,6 +176,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+      
 
     ],
 
@@ -228,6 +230,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Form'      => 'Illuminate\Html\FormFacade',
      'Html'      => 'Illuminate\Html\HtmlFacade',
+     'Image' => Intervention\Image\Facades\Image::class,
 
     ],
 

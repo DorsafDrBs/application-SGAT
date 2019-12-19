@@ -24,7 +24,7 @@ Route::get('cartographie','CartographieController@cartographie')->name('cartogra
 Route::group(['middleware' => ['auth']], function() {
     Route::get('manager','HomeController@manager')->name('manager');
     Route::any('profile/profile','ProfileController@index')->name('profile.index');
-    Route::post('profile/profile/update','ProfileController@update')->name('profile.profile.update');
+    Route::any('profile/profile/update','ProfileController@update')->name('profile.update');
     Route::resource('roles/roles','RoleController');
     Route::resource('users/users','UserController');
     Route::resource('process/process','ProcessController');
