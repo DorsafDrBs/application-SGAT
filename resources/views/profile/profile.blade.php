@@ -67,7 +67,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
                 <div class="col-lg-12 col-md-offset-2">
-                 <img src="/uploads/images/{{ Auth::user()->picture }}" style="width:300px; height:300px; ">
+                 <img src="/uploads/images/{{ Auth::user()->picture }}" style="width:200px; height:250px; ">
                 </div>
              </div>
              <div  class="modal-footer">

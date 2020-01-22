@@ -6,7 +6,12 @@ use App\indicatorsproj;
 use Illuminate\Http\Request;
 
 class IndicatorsprojController extends Controller
-{
+{	public function __construct()
+    {
+    $this->middleware('permission:indic-proj-create');
+    $this->middleware('permission:indic-proj-edit',['only' => ['edit','update']]);
+    $this->middleware('permission:indic-proj-delete', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -70,7 +75,7 @@ class IndicatorsprojController extends Controller
        
 
         return redirect()->route('indicprojs.index')
-        ->with('success','project  mis à jour avec succès');
+        ->with('success','Indicator successfully updated ');
 }
 
     /**
@@ -85,7 +90,7 @@ class IndicatorsprojController extends Controller
           $indicatorsproj->delete();
     
             return redirect()->route('indicprojs.index')
-                            ->with('success','Indicateur supprimé avec succès');
+                            ->with('success','Indicator successfully deleted');
       
     }
 }

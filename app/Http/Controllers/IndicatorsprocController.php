@@ -10,7 +10,13 @@ use DB;
 use Gate;
 
 class IndicatorsprocController extends Controller
-{
+{ 	public function __construct()
+    {
+   
+    $this->middleware('permission:indic-proc-create');
+    $this->middleware('permission:indic-proc-edit',['only' => ['edit','update']]);
+    $this->middleware('permission:indic-proc-delete', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *

@@ -11,21 +11,15 @@
 
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/open-iconic-bootstrap.min.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/animate.css') }}">
-
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/owl.carousel.min.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/owl.theme.default.min.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/magnific-popup.css') }}">
-
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/aos.css') }}">
-
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/ionicons.min.css') }}">
-
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/flaticon.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/icomoon.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('welcom/css/style.css') }}">
-<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
-        <!-- Styles -->
-        
+<!--===============================================================================================--> 
     <body>
     <div class="bg-top navbar-light">
     	<div class="container">
@@ -77,19 +71,17 @@
         <a class="nav-link" href="#service">Services</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('login') }}">Log In</a>
+        <a class="nav-link"   href="{{ route('login') }}">Log In</a>
       </li>
-      @if (Route::has('register'))
-      <li class="nav-item">
-        <a class="nav-link" href="{{ route('register') }}">Register</a>
-      </li>
-      @endif
+  
        @endauth
     </ul>
   </div>
 </nav>     
 	  </div> @endif	
-                     
+
+
+</div>          
     <section class="home-slider owl-carousel">
       <div class="slider-item" style="background-image:url(welcom/images/airbuswallpaper.jpg);">
       	<div class="overlay"></div>
@@ -104,7 +96,7 @@
         </div>
       </div>
 
-      <div class="slider-item" style="background-image:url(images/0.jpg);">
+      <div class="slider-item" style="background-image:url(welcom/images/bg_3.jpg);">
       	<div class="overlay"></div>
         <div class="container">
           <div class="row no-gutters slider-text align-items-center justify-content-start" data-scrollax-parent="true">
@@ -123,7 +115,7 @@
 				<div class="row d-flex">
 					<div class="col-md-5 order-md-last wrap-about align-items-stretch">
 						<div class="wrap-about-border ftco-animate">
-							<div class="img" style="background-image: url(images/visuel_sogeclair.jpg); border"></div>
+							<div class="img" style="background-image: url(welcom/images/bg_3.jpg); border"></div>
 							<div class="text">
 								<h3>SOGECLAIR Aerospace Tunisie</h3>
 								<p>Created in 2009, SOGECLAIR Aerospace Tunisia provides experienced teams dedicated to your projects. Whether they are experts, engineers, technicians, developers or attachés to our support service, our staff are all highly qualified. They meet on essential values such as the respect of the commitments, a taste for a challenge, the satisfaction and the achievement of the objectives of our customers</p>
@@ -179,7 +171,7 @@
 		            <div class="block-18">
 		            	<div class="icon"><span class="flaticon-doctor"></span></div>
 		              <div class="text">
-		                <strong class="number" data-number="12">0</strong>
+		                <strong class="number" data-number="{{$process}}">0</strong>
 		                <span>Processes </span>
 		              </div>
 		            </div>
@@ -188,7 +180,7 @@
 		            <div class="block-18">
 		            	<div class="icon"><span class="flaticon-doctor"></span></div>
 		              <div class="text">
-		                <strong class="number" data-number="80">0</strong>
+		                <strong class="number" data-number="{{$projet}}">0</strong>
 		                <span> Projects</span>
 		              </div>
 		            </div>
@@ -197,7 +189,7 @@
 		            <div class="block-18">
 		            	<div class="icon"><span class="flaticon-doctor"></span></div>
 		              <div class="text">
-		                <strong class="number" data-number="35">0</strong>
+		                <strong class="number" data-number="{{$users}}">0</strong>
 		                <span>Users</span>
 		              </div>
 		            </div>
@@ -290,7 +282,7 @@
 			</div>
 		</section>
 		
-		<section class="ftco-intro ftco-no-pb img" style="background-image: url(welcom/images/bg_1.jpg);">
+		<section class="ftco-intro ftco-no-pb img" style="background-image: url(welcom/images/bg_3.jpg);">
     	<div class="container">
     		<div class="row justify-content-center">
           <div class="col-lg-9 col-md-8 d-flex align-items-center heading-section heading-section-white ftco-animate">
@@ -423,8 +415,9 @@
       
     
       <!-- loader -->
-     
-    
+   	
+
+
       <script src="{{ URL::asset('welcom/js/jquery.min.js') }}"></script>
       <script src="{{ URL::asset('welcom/js/jquery-migrate-3.0.1.min.js') }}"></script>
       <script src="{{ URL::asset('welcom/js/popper.min.js') }}"></script>
@@ -437,9 +430,10 @@
       <script src="{{ URL::asset('welcom/js/aos.js') }}"></script>
       <script src="{{ URL::asset('welcom/js/jquery.animateNumber.min.js') }}"></script>
       <script src="{{ URL::asset('welcom/js/scrollax.min.js') }}"></script>
-      <script src="{{ URL::asset('welcom/https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false') }}"></script>
-      <script src="{{ URL::asset('welcom/js/google-map.js') }}"></script>
-      <script src="{{ URL::asset('welcom/js/main.js') }}"></script>
+     
+	  <script src="{{ URL::asset('welcom/js/main.js') }}"></script>
+	  
+	
         
       </body>
     </html>

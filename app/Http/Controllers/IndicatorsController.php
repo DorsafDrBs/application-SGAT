@@ -21,6 +21,14 @@ class IndicatorsController extends Controller
   $this->middleware('permission:indic-proc-create');
   $this->middleware('permission:indic-proc-edit',['only' => ['edit','update']]);
   $this->middleware('permission:indic-proc-delete', ['only' => ['destroy']]);
+  $this->middleware('permission:indic-proj-list');
+  $this->middleware('permission:indic-proj-create');
+  $this->middleware('permission:indic-proj-edit',['only' => ['edit','update']]);
+  $this->middleware('permission:indic-proj-delete', ['only' => ['destroy']]);
+  $this->middleware('permission:indic-user-list');
+  $this->middleware('permission:indic-user-create');
+  $this->middleware('permission:indic-user-edit',['only' => ['edit','update']]);
+  $this->middleware('permission:indic-user-delete', ['only' => ['destroy']]);
   }
  public function index()
 {

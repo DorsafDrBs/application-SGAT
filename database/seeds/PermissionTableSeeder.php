@@ -31,7 +31,14 @@ class PermissionTableSeeder extends Seeder
             ['id' => 16, 'name' => 'indic-proc-create'],
             ['id' => 17, 'name' => 'indic-proc-edit'],
             ['id' => 18, 'name' => 'indic-proc-delete'],
-         
+            ['id' => 19, 'name' => 'indic-proj-list'],
+            ['id' => 20, 'name' => 'indic-proj-create'],
+            ['id' => 21, 'name' => 'indic-proj-edit'],
+            ['id' => 22, 'name' => 'indic-proj-delete'],
+            ['id' => 23, 'name' => 'indic-user-list'],
+            ['id' => 24, 'name' => 'indic-user-create'],
+            ['id' => 25, 'name' => 'indic-user-edit'],
+            ['id' => 26, 'name' => 'indic-user-delete'],
             
          ];
  

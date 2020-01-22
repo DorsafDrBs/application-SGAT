@@ -101,7 +101,6 @@ class RoleController extends Controller
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();
 
-
         return view('roles.edit',compact('role','permission','rolePermissions'));
     }
 
@@ -138,9 +137,10 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        DB::table("roles")->where('id',$id)->delete();
+        $role=Role::findOrFail($request->role_id);
+        $role->delete();
         return redirect()->route('roles.index')
                         ->with('success','Role deleted successfully');
     }

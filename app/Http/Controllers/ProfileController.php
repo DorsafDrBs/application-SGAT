@@ -28,6 +28,10 @@ class ProfileController extends Controller
     public function index(Request $request )
     { // afficher les projet de l'utilisateur connecte
         $id=Auth::user()->id;
+        $user=DB::table('users')
+        ->select('id')
+        ->where('id',$id)
+        ->get();
 $idp=1; 
 $dataproc=array();
          $processes=DB::table('processes')

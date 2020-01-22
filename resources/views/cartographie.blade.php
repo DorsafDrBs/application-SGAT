@@ -6,7 +6,18 @@
 <style>
     
 /* New Styles */
+.lvericaltext{
 
+transform: rotate(-90deg);
+padding-right:30px;
+padding-left:20px;
+}
+.vericaltext{
+	padding-right:30px;
+padding-left:20px;
+transform: rotate(90deg);
+transform-origin: bottom center ;
+   }
 </style>
 
   <!-- Main content -->
@@ -16,8 +27,8 @@
 
 	  <div class="row ">
 		<div class="col-sm-2 rounded bg-secondary  border border-white shadow  ">
-		<p class="rotate  text-white text-center">	INTERESTED PARTIES; CUSTOMERS & COMPANY CONTEXT</p>
-		</div>
+		<div class=" col-sm-12 lvericaltext"><p class=" text-white  ">	INTERESTED PARTIES; CUSTOMERS & COMPANY CONTEXT</p>
+		</div></div>
 		<div class="col ">
 	    <div class="col mb-2 mr-sm-2 bg-light border border-muted rounded text-center">
 	<h3>	MANAGEMENT PROCESS</h3>
@@ -34,13 +45,16 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-											<h4 class="modal-title" id="myModalLabel">  Process <span id="modal-myvar"></span>: </h4>
+											<h4 class="modal-title" id="myModalLabel"> Indicators of <?= $mg['name'] ?> <span id="modal-myvar"></span>: </h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            </div>
-											<?php foreach($mg['indicators'] as $indicator) { ?>
-                                            <div class="modal-body">
+                                            </div><?php if($mg['indicators']->isEmpty())
+					{ echo " this process haven't indicators";}
+					else {?>
+				           	<div class="modal-body">
+											<?php foreach($mg['indicators'] as $indicator) { ?>                                      
                                             <p id="management-data" name="name" id="name"  ><?="'{$indicator->name}'"?></p>
-                                            </div> 
+											<?php }?>
+											</div> 
 											<?php }?>
                                         </div>
                                     </div>
@@ -66,13 +80,17 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-											<h4 class="modal-title" id="myModalLabel">  Process <span id="modal-myvar"></span>: </h4>
+											<h4 class="modal-title" id="myModalLabel"> Indicators of <?= $rs['name'] ?> <span id="modal-myvar"></span>: </h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                             </div>
+				<?php if($rs['indicators']->isEmpty())
+					{ echo " this process haven't indicators";}
+					else {?>
+				           	<div class="modal-body">
 											<?php foreach($rs['indicators'] as $indicator) { ?>
-                                            <div class="modal-body">
-                                            <p id="management-data" name="name" id="name"  ><?="'{$indicator->name}'"?></p>
-                                            </div> 
+                                              <p id="management-data" name="name" id="name"  ><?="'{$indicator->name}'"?></p>
+											<?php }?>
+											</div> 
 											<?php }?>
                                         </div>
                                     </div>
@@ -100,25 +118,25 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-											<h4 class="modal-title" id="myModalLabel">  Process <span id="modal-myvar"></span>: </h4>
+											<h4 class="modal-title" id="myModalLabel">  Indicators of <?= $rs['name'] ?>  <span id="modal-myvar"></span>: </h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            </div>
-											<?php foreach($rs['indicators'] as $indicator) { ?>
-                                            <div class="modal-body">
-                                            <p id="management-data" name="name" id="name"  ><?="'{$indicator->name}'"?></p>
-                                            </div> 
-											<?php }?>
-                                        </div>
-                                    </div>
-                                </div>
-                            
-		
-				<?php }}?>
-					
-						</div>
+                                            </div>	
+				<?php if($rs['indicators']->isEmpty())
+				 	{ echo " this process haven't indicators";}
+				else {?>
+					<div class="modal-body">
+						<?php foreach($rs['indicators'] as $indicator) { ?>
+                              <p id="management-data" name="name" id="name"  ><?="'{$indicator->name}'"?></p>
+                    	<?php }?>		
 					</div>
-			
-			</div>
+				<?php }?>
+                     </div>
+            </div>
+         </div>                   
+	<?php }}?>
+		</div>
+	</div>
+ </div>
             <div class="col mb-2 mr-sm-2 bg-light border border-muted rounded text-center">
 			<h3>SUPPORT PROCESS	</h3>
 				<div class="row">
@@ -135,25 +153,30 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-											<h4 class="modal-title" id="myModalLabel">  Process <span id="modal-myvar"></span>: </h4>
+											<h4 class="modal-title" id="myModalLabel">  Indicators of <?= $sp['name'] ?>  <span id="modal-myvar"></span>: </h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                             </div>
-											<?php foreach($sp['indicators'] as $indicator) { ?>
-                                            <div class="modal-body">
-                                            <p id="management-data" name="name" id="name"  ><?="'{$indicator->name}'"?></p>
-                                            </div> 
-											<?php }?>
+					<?php if($sp['indicators']->isEmpty())
+				         	{ echo " this process haven't indicators";}
+				   else {?>
+					<div class="modal-body">
+							<?php foreach($sp['indicators'] as $indicator) { ?>
+                               <p id="management-data" name="name" id="name"  ><?="'{$indicator->name}'"?></p>
+                            <?php }?>
+					</div> 
+				<?php }?>
                                         </div>
                                     </div>
-                                </div>
-                            
-		
+                                </div>    
 				<?php }?>
 			 </div>
 		 </div>
 		</div>
-		<div class="col-2 rounded bg-secondary text-center text-white shadow text-rotate">
-	INTERESTED PARTIES & CUSTOMERS SATISFACTION
+		
+		<div class="col-sm-2 rounded bg-secondary  border border-white shadow  ">
+		<div class=" col-sm-12 vericaltext">
+			<p class="  text-white  ">INTERESTED PARTIES & CUSTOMERS SATISFACTION</p>
+		</div>
 		</div>
 	</div>
 	

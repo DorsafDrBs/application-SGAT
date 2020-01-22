@@ -13,10 +13,10 @@
     <div class="col-lg-4">
      <div class="card" style="width: 18rem;">
        <div class="card-body">
-         <h5 class="card-title">Indicators of processus</h5>
+         <h5 class="card-title">Process's Indicators </h5>
          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
          @can('indic-proc-list')
-         <a href="{{route('indicprocs.index')}}" class="btn btn-primary">Ajouter</a>
+         <a href="{{route('indicprocs.index')}}" class="btn btn-primary">ADD</a>
          @endcan
         </div>
       </div>
@@ -24,18 +24,18 @@
     <div class="col-lg-4">
      <div class="card" style="width: 18rem;">
        <div class="card-body">
-       <h5 class="card-title">Indicators of projets</h5>
+       <h5 class="card-title">Project's Indicators </h5>
         <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-       <a href="{{route('indicprojs.index')}}" class="btn btn-primary" >Ajouter</a>
+       <a href="{{route('indicprojs.index')}}" class="btn btn-primary" >ADD</a>
        </div>
       </div>
     </div>
    <div class="col-lg-4 ">
      <div class="card" style="width: 18rem;">
       <div class="card-body">
-       <h5 class="card-title">Indicators of utilisateurs</h5>
+       <h5 class="card-title"> User's Indicators </h5>
        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-       <a href="{{route('indicusers.index')}}" class="btn btn-primary" >Ajouter</a>
+       <a href="{{route('indicusers.index')}}" class="btn btn-primary" >ADD</a>
        </div>
      </div>
      </div>
@@ -44,27 +44,27 @@
     <div class="col-lg-4">
       <div class="card" style="width: 18rem;">
         <div class="card-body">
-         <h5 class="card-title"> the data of the process indicators</h5>
+         <h5 class="card-title"> Process's indicators data</h5>
          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-         <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">Ajouter</a>
+         <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">ADD</a>
         </div>
       </div>
    </div>
   <div class="col-lg-4">
      <div class="card" style="width: 18rem;">
        <div class="card-body">
-       <h5 class="card-title"> the data of the projects indicators</h5>
+       <h5 class="card-title"> Project's indicators data</h5>
         <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-       <a href="#" class="btn btn-primary"data-toggle="modal" data-target="#staticBackdrop2" >Ajouter</a>
+       <a href="#" class="btn btn-primary"data-toggle="modal" data-target="#staticBackdrop2" >ADD</a>
      </div>
     </div>
   </div>
    <div class="col-lg-4 ">
       <div class="card" style="width: 18rem;">
         <div class="card-body">
-         <h5 class="card-title">the data of the users indicators</h5>
+         <h5 class="card-title">User's indicators data</h5>
          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-         <a href="#" class="btn btn-primary"data-toggle="modal" data-target="#staticBackdrop3">Ajouter</a>
+         <a href="#" class="btn btn-primary"data-toggle="modal" data-target="#staticBackdrop3">ADD</a>
        </div>
       </div>
      </div>
@@ -76,7 +76,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Import Process Indicators Data</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Import Process's Indicators Data</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -113,7 +113,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Import Projects Indicators Data</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Import Project's Indicators Data</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -149,7 +149,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Import Users Indicators Data</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Import User's Indicators Data</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

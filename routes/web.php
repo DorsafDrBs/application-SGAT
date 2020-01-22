@@ -11,9 +11,8 @@
 | 
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'WelcomController@index')->name('welcome');
+
 
 Auth::routes();
 
@@ -32,7 +31,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('indicators/indicators','IndicatorsController');
     Route::resource('indicprocs/indicprocs','IndicatorsprocController');
     Route::resource('indicprojs/indicprojs','IndicatorsprojController');
-    Route::resource('indicusers/indicusers','IndicatorsprojController');
+    Route::resource('indicusers/indicusers','IndicatorusersController');
     Route::post('indicators/indicators/importExcel','IndicatorsController@importExcel')->name('indicators.index.importExcel');
     Route::post('indicators/indicators/importerExcelprojet','IndicatorsController@importerExcelprojet')->name('indicators.index.importerExcelprojet');
     Route::post('indicators/indicators/importerExcelcollabo','IndicatorsController@importerExcelcollabo')->name('indicators.index.importerExcelcollabo');

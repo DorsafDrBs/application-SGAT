@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content')
+@section('authenticat')
 
 
 <div class="limiter">

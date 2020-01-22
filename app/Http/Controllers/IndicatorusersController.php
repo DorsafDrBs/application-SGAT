@@ -6,7 +6,13 @@ use Illuminate\Http\Request;
 use App\indicatorsusers;
 class IndicatorusersController extends Controller
 {
-  
+    public function __construct()
+    {
+ 
+    $this->middleware('permission:indic-user-create');
+    $this->middleware('permission:indic-user-edit',['only' => ['edit','update']]);
+    $this->middleware('permission:indic-user-delete', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *

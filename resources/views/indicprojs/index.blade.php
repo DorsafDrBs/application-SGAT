@@ -1,23 +1,30 @@
 
  @extends('manager')
 @section('manager')
-<div class="row">
-    <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-<div class="col-lg-12">
-     <h2 class="card-title">Les indicateurs des projets</h2>  
-</div>
-
-</div>
-    
-</div>
-<div class="-sm m-0 float-right">
-              
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
- 	Ajouter
-</button>
-          
+<div class="container">
+        <div class="table-wrapper">			
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-4">
+						<div class="show-entries">
+               @can('indic-proj-create')
+                <a class="btn btn-primary rounded border bottom" data-toggle="modal" data-target="#myModal"> Create</a>
+                @endcan
+						</div>						
+					</div>
+					<div class="col-sm-4">
+						<h2 class="text-center">Projects <b> Indicators </b></h2>
+					</div>
+                    <div class="col-sm-4">
+                        <div class="search-box">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="material-icons">&#xE8B6;</i></span>
+								<input type="text" class="form-control" placeholder="Search&hellip;">
+							</div>
+                        </div>
+                    </div>
                 </div>
-
+            </div>
     @if ($message = Session::get('success'))
         <div class="alert alert-success">
             <p>{{ $message }}</p>
@@ -27,69 +34,47 @@
 
  <br/>
     <table id="table"  class="table table-bordered">
+      <thead>
         <tr>
             <th>No</th>
             <th>Indicateurs</th>
             <th>Details</th>
-            <th width="280px">Actions</th>
+            <th width="180px">Actions</th>
         </tr>
+        </thead>
+        <tbody>
 	    @foreach ($indicproj as $indic)
 	    <tr>
 	        <td>{{ ++$i }}</td>
 	        <td >{{ $indic->name }}</td>
 	        <td >{{ $indic->detail }}</td>
 	        <td>
-                <button class="btn btn-info" data-myname="{{$indic->name}}" data-mydetail="{{$indic->detail}}" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#edit">Modifier</button>
-									/
-									<button class="btn btn-danger" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#delete">Supprimer</button>
-								</td>
+          @can('indic-proj-edit')
+                <a class="edit" data-myname="{{$indic->name}}" data-mydetail="{{$indic->detail}}" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#edit"><i class="material-icons">&#xE254;</i></a>
+								@endcan
+                @can('indic-proj-delete')
+                	<button class="delete" data-indicid="{{$indic->id}}" data-toggle="modal" data-target="#delete"><i class="material-icons ">&#xE872;</i></button>
+                @endcan
+                </td>
 	        </td>
 	    </tr>
 	    @endforeach
+      </tbody>
     </table>
 
     </div>
+    <div class="clearfix">
     {!! $indicproj->links() !!}
-  
-    <script> /*
-$(document).ready(function () {
-    $(".open-AddBookDialog").click(function () {
-        var a = $(this);
-
-  var data-id = a.data('data-id')
-
-  var modal = $('#modal')
-  modal.find('#id').text(data-id)
-  modal.find('#delete_btn_modal').attr('data-item_id',item_id)
-  modal.modal('show');
-    });
-});
- var table = document.getElementById('table');
-                
-                for(var i = 1; i < table.rows.length; i++)
-                {
-                    table.rows[i].onclick = function()
-                    { 
-                       rIndex = this.rowIndex;
-                         document.getElementById("name").value = this.cells[1].innerHTML;
-                         document.getElementById("detail").value = this.cells[2].innerHTML;
-                    };*/
-           
-}
-</script>
-
+    </div>  
+     </div>
     
-      
-	<!-- Button trigger modal -->
-
-
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-form" role="document">
     <div class="modal-content">
       <div class="modal-header">
         
-        <h4 class="modal-title" id="myModalLabel">Ajouter un nouvelle indicateur</h4>
+        <h4 class="modal-title" id="myModalLabel">Ajouter hh un nouvelle indicateur</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
       <form action="{{route('indicprojs.store')}}" method="post">
@@ -100,7 +85,7 @@ $(document).ready(function () {
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-	        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+	        <button type="submit" class="btn btn-primary">Save</button>
 	      </div>
       </form>
     </div>
@@ -109,7 +94,7 @@ $(document).ready(function () {
 
 <!-- Modal -->
 <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-form" role="document">
     <div class="modal-content">
       <div class="modal-header">
       <h4 class="modal-title" id="myModalLabel">Modifier un indicateur </h4>
@@ -122,10 +107,8 @@ $(document).ready(function () {
 	      <div class="modal-body">
 	      		<input type="hidden" name="indicator_id" id="indic_id" value="">
                   @include('indicprojs.form')
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-	        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+	     
+	        <button type="submit" class="btn btn-primary">Save</button>
 	      </div>
       </form>
     </div>
@@ -137,22 +120,19 @@ $(document).ready(function () {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  
         <h4 class="modal-title text-center" id="myModalLabel">Confirmer</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
       <form action="{{route('indicprojs.destroy','test')}}" method="post">
       		{{method_field('delete')}}
       		{{csrf_field()}}
 	      <div class="modal-body">
-				<p class="text-center">
-                Êtes-vous sûr de vouloir supprimer ceci?
-				</p>
+				<p> Are you sure you want to delete this?	</p>
 	      		<input type="hidden" name="indicator_id" id="indicd_id" value="">
 
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-success" data-dismiss="modal">Non, Annuler</button>
-	        <button type="submit" class="btn btn-warning">Oui, Supprimer</button>
+	        <button type="button" class="btn btn-success" data-dismiss="modal">No, Cansel</button>
+	        <button type="submit" class="btn btn-warning">Yes, Delete</button>
 	      </div>
       </form>
     </div>
