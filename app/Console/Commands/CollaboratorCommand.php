@@ -1,30 +1,31 @@
 <?php
 
 namespace App\Console\Commands;
-use Illuminate\Console\Command;
+
 use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\Facades\Excel;
-use App\indicatorsproj;
+use App\indicatorsusers;
 use DB;
 use PHPExcel_IOFactory;
+use Illuminate\Console\Command;
 use Carbon\Carbon;
   /** PHPExcel_IOFactory */
 include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
-class CustomCommand extends Command
+class CollaboratorCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'custom:command';
+    protected $signature = 'custom:collaborator';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'inserted data';
+    protected $description = 'inserted collaborator data';
 
     /**
      * Create a new command instance.
@@ -62,7 +63,7 @@ class CustomCommand extends Command
 
          try {
          // Get worksheet dimensions 
-		$sheet = $objPHPExcel->getSheet(0);  //getSheetByName()
+		$sheet = $objPHPExcel->getSheet(1);  //getSheetByName()
 		$highestRow = $sheet->getHighestRow(); 
 		$highestColumn = $sheet->getHighestColumn();
      
@@ -145,30 +146,30 @@ $rows = $sheet->rangeToArray('B5:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
 	    }
    }		  		
   if ($row[9] > 0)
-    { $test_hours=DB::table('hours')
-        ->join('projects','projects.id','hours.project_id')
-        ->where('projects.project_name',$row[5])
-        ->where('hours.annee',$row[0])
-        ->where('hours.semaine',$row[1])
-        ->where('hours.mois',$row[2])
-        ->count();
-        if($test_hours>0)
-        {echo "hours data existed";}
-   else { 
-        // insert hours
-           DB::table('hours')->insert([
-            'project_id' =>$proj->id,
-            'h_r_rl' => $row[9], 
-            'h_r_est' => $row[10],
-            'h_fact'=>$row[11],
-            'annee'=>$row[0],
-            'semaine'=>$row[1],
-            'mois'=>$row[2],
-            'trimestre'=>$row[3],
-            'created_at'=> Carbon::now(),
-             ]);
-             $this->info('hours data inserted successfully');
-           }
+        { $test_hours=DB::table('hours')
+            ->join('projects','projects.id','hours.project_id')
+            ->where('projects.project_name',$row[5])
+            ->where('hours.annee',$row[0])
+            ->where('hours.semaine',$row[1])
+            ->where('hours.mois',$row[2])
+            ->count();
+            if($test_hours>0)
+            {echo "hours data existed";}
+       else { 
+            // insert hours
+               DB::table('hours')->insert([
+                'project_id' =>$proj->id,
+                'h_r_rl' => $row[9], 
+                'h_r_est' => $row[10],
+                'h_fact'=>$row[11],
+                'annee'=>$row[0],
+                'semaine'=>$row[1],
+                'mois'=>$row[2],
+                'trimestre'=>$row[3],
+                'created_at'=> Carbon::now(),
+                 ]);
+                 $this->info('hours data inserted successfully');
+               }
           $test_efficacite=DB::table('indicatorsproj_value')
              ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois')
              ->join('projects','projects.id','indicatorsproj_value.projects_id')
@@ -225,10 +226,7 @@ $rows = $sheet->rangeToArray('B5:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
     }
 	}
  
-         
- 
-    
-   
-}
-}  
+         }
+
+    }
 }

@@ -78,7 +78,6 @@ class HomeController extends Controller
          // liste des projects qui existes dans les projects-indicators (id, name)
          $projects=DB::table('indicatorsproj_value')
          ->join('projects', 'indicatorsproj_value.projects_id', '=', 'projects.id')
-        
          ->select('projects.id', 'projects.project_name')
          ->distinct()
          ->get();
@@ -104,7 +103,9 @@ class HomeController extends Controller
                  $months=DB::table('indicatorsproj_value')
                  ->where('indicatorsproj_id', $ind->id)
                  ->where('projects_id', $project->id)
-                 ->orderBy('created_at')
+                 ->orderBy('annee')
+                 ->orderBy('semaine')
+                 ->orderBy('mois')
                  ->get();
                                  
                  // pk "idg" dans indic? car chaque graphe est un indicator, il faut identifier chaque indicator ajouté
@@ -219,7 +220,7 @@ class HomeController extends Controller
                 }
 			$objpro['indics']=$indics;
 			$data[]=$objpro;
-		} dd($data);
+		} dd($data); 
 		//***************************return */
 		return View('home2',['data'=>$data,
 		'procs'=>$procs,

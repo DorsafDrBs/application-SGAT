@@ -20,7 +20,7 @@ class CreateHoursTable extends Migration
             $table->String('mois');
             $table->String('trimestre');
             $table->integer('h_r_rl');
-            $table->integer('r_r_est');
+            $table->integer('h_r_est');
             $table->integer('h_fact');
             $table->unsignedBigInteger('project_id')->nullable();
             $table->foreign('project_id')->references('id')->on('projects');

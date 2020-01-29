@@ -24,11 +24,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+      // $schedule->command('custom:collaborator')
+           //   ->daily();
         $schedule->command('custom:command')
-        ->everyMinute () 
-        ->runInBackground();
+        ->dailyAt('8:15');
+       
     }
 
     /**

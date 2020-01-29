@@ -128,7 +128,80 @@
 		});
 	}
 </script>
-			
+		
+  <!-- container -->
+
+<div class="container-fluid">
+
+<div class="row">
+	<div class="col-lg-6 col-md-4 col-sm-6 col-xs-6 demo">
+		<div class="demo-container">
+			<div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 footer-container d-flex">
+				<a  data-toggle="dropdown" class="nav-link dropdown-toggle text-info mt-auto p-2 " href="#">Filtres <b class="caret"></b></a>
+				    <ul class="dropdown-menu" >	
+					<li><a href="#" value="Q"   class="dropdown-item cper text-info">Weekly</a></li>				
+					 <li><a href="#" value="M"   class="dropdown-item cper text-info">Mensual</a></li>
+					 <li><a  href="#" value="T"  class="dropdown-item cper text-info">Trimestrial</a></li>
+					 <li><a  href="#" value="S"  class="dropdown-item cper text-info">Semesterial</a></li>
+				     </ul>
+			</div>
+			<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 image-container">
+			 <div id="demo" class="carousel slide" data-ride="carousel">
+				   <ul class="carousel-indicators"> 
+				        <li data-target="#demo" data-slide-to="0" class="active"></li>
+                    </ul>
+				<?php foreach($datap as $project) { ?>
+					
+			      <?php foreach($project['indics'] as $indic) { ?>
+					
+					<div class="carousel-inner">
+                       <div class="card carousel-item active">
+	                      <div id="containerp<?=$indic['idg'] ?>" style="min-width: 230px; height: 270px; margin: 0 auto"> </div>
+                        </div>
+					
+							 <script>
+								 titre = '<?= "{$indic['name']} Projet {$project['name']}" ?>';
+								 name = '<?= "{$indic['name']}" ?>';
+								 idchart = 'containerp<?="{$indic['idg']}"?>';
+								 
+								 months = [];
+								 <?php foreach($indic['mont ,hs'] as $row) {?>
+								 months.push({"value":<?="{$row->value}"?>, "target":<?="{$row->target}"?>, "created_at":<?= "'{$row->created_at}'" ?>});
+								 <?php } ?>
+								 
+								 mygraphs.push({"idchart":idchart, "titre":titre, "name":name, "months":months});
+
+							 </script> 
+					</div>
+		        <?php }	} ?>
+
+							 <script>
+								 mygraphs.forEach(function (mygraph)
+								  {
+									 updateChart(mygraph, per);
+								 });
+								 
+								 $(".cper").click(function () {
+									 per = $(this).attr("value");
+									 mygraphs.forEach(function (mygraph) {
+										 updateChart(mygraph, per);
+									 });
+								 });
+							 </script>
+				     <a class="carousel-control-prev bg-blue" href="#demo" data-slide="prev"> 
+                         <span class="carousel-control-prev-icon">prev</span>
+                     </a>
+                     <a class="carousel-control-next" href="#demo" data-slide="next">
+                         <span class="carousel-control-next-icon"></span>
+                    </a>	
+			  </div> 
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+
+
+
 			<div class="clearfix visible-sm visible-xs"></div>	
 	<div class="col-lg-12 col-md-10 col-sm-10 col-xs-10 demo">
 			<div class="demo-container">
@@ -315,74 +388,5 @@
   <!-- /Modal filter for gauge-->
   </div> 
 
-  <!-- container -->
-
-<div class="container-fluid">
-
-<div class="row">
-	<div class="col-lg-6 col-md-4 col-sm-6 col-xs-6 demo">
-		<div class="demo-container">
-			<div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 footer-container d-flex">
-				<a  data-toggle="dropdown" class="nav-link dropdown-toggle text-info mt-auto p-2 " href="#">Filtres <b class="caret"></b></a>
-				    <ul class="dropdown-menu" >					
-					 <li><a href="#" value="M"   class="dropdown-item cper text-info">Mensual</a></li>
-					 <li><a  href="#" value="T"  class="dropdown-item cper text-info">Trimestrial</a></li>
-					 <li><a  href="#" value="S"  class="dropdown-item cper text-info">Semesterial</a></li>
-				     </ul>
-			</div>
-			<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 image-container">
-			 <div id="demo" class="carousel slide" data-ride="carousel">
-				   <ul class="carousel-indicators"> 
-				        <li data-target="#demo" data-slide-to="0" class="active"></li>
-                    </ul>
-				<?php foreach($datap as $project) { ?>
-					
-			      <?php foreach($project['indics'] as $indic) { ?>
-					
-					<div class="carousel-inner">
-                       <div class="card carousel-item active">
-	                      <div id="containerp<?=$indic['idg'] ?>" style="min-width: 230px; height: 270px; margin: 0 auto"> </div>
-                        </div>
-					
-							 <script>
-								 titre = '<?= "{$indic['name']} Projet {$project['name']}" ?>';
-								 name = '<?= "{$indic['name']}" ?>';
-								 idchart = 'containerp<?="{$indic['idg']}"?>';
-								 
-								 months = [];
-								 <?php foreach($indic['months'] as $row) {?>
-								 months.push({"value":<?="{$row->value}"?>, "target":<?="{$row->target}"?>, "created_at":<?= "'{$row->created_at}'" ?>});
-								 <?php } ?>
-								 
-								 mygraphs.push({"idchart":idchart, "titre":titre, "name":name, "months":months});
-
-							 </script> 
-					</div>
-		        <?php }	} ?>
-
-							 <script>
-								 mygraphs.forEach(function (mygraph)
-								  {
-									 updateChart(mygraph, per);
-								 });
-								 
-								 $(".cper").click(function () {
-									 per = $(this).attr("value");
-									 mygraphs.forEach(function (mygraph) {
-										 updateChart(mygraph, per);
-									 });
-								 });
-							 </script>
-				     <a class="carousel-control-prev bg-blue" href="#demo" data-slide="prev"> 
-                         <span class="carousel-control-prev-icon">prev</span>
-                     </a>
-                     <a class="carousel-control-next" href="#demo" data-slide="next">
-                         <span class="carousel-control-next-icon"></span>
-                    </a>	
-			  </div> 
-			</div>
-			<div class="clearfix"></div>
-		</div>
-	</div>
 	
 @endsection
