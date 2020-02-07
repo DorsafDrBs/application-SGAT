@@ -10,7 +10,7 @@ use PHPExcel_IOFactory;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
   /** PHPExcel_IOFactory */
-include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
+//include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
 class CollaboratorCommand extends Command
 {
     /**
@@ -79,35 +79,36 @@ $rows = $sheet->rangeToArray('B5:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
         {	
             // Loop through each row of the worksheet in turn
           
-			// ** Show row data array 
+            // ** Show row data array 
+            $users=DB::table('users')->where('name',$row[6])->first();
             $proj=DB::table('projects')->where('project_name',$row[5])->first();
-            $otd=DB::table('indicatorsprojs')->where('name','OTD')->first();
-			$rft=DB::table('indicatorsprojs')->where('name','RFT')->first();
-			$efficacite=DB::table('indicatorsprojs')->where('name','Efficacité')->first();
-			$efficience=DB::table('indicatorsprojs')->where('name','Efficience')->first();
+            $otd=DB::table('indicatorusers')->where('name','OTD')->first();
+			$rft=DB::table('indicatorusers')->where('name','RFT')->first();
+			$efficacite=DB::table('indicatorusers')->where('name','Efficacité')->first();
+			$efficience=DB::table('indicatorusers')->where('name','Efficience')->first();
           
     
-   if($row[6] > 0)
+   if($row[7] > 0)
  {
-      $test_otd=DB::table('indicatorsproj_value')
-             ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois')
-             ->join('projects','projects.id','indicatorsproj_value.projects_id')
-             ->join('indicatorsprojs','indicatorsprojs.id','indicatorsproj_value.indicatorsproj_id')
-             ->where('indicatorsprojs.name',$otd->name)
+      $test_otd=DB::table('indicatorsusers_value')
+             ->select('indicatorsusers_value.projects_id','indicatorsusers_value.annee','indicatorsusers_value.semaine','indicatorsusers_value.mois')
+             ->join('projects','projects.id','indicatorsusers_value.projects_id')
+             ->join('indicatorusers','indicatorusers.id','indicatorsusers_value.indicatorusers_id')
+             ->where('indicatorusers.name',$otd->name)
              ->where('projects.project_name',$row[5])
-             ->where('indicatorsproj_value.annee',$row[0])
-             ->where('indicatorsproj_value.semaine',$row[1])
-             ->where('indicatorsproj_value.mois',$row[2])
+             ->where('indicatorsusers_value.annee',$row[0])
+             ->where('indicatorsusers_value.semaine',$row[1])
+             ->where('indicatorsusers_value.mois',$row[2])
              ->count();
   if($test_otd>0)
         {echo "otd data existed";}
   else {
          $val_otd=(((int)$row[6]-(int)$row[8])/(int)$row[6])*100;
         
-         DB::table('indicatorsproj_value')->insert([
+         DB::table('indicatorsusers_value')->insert([
          'value' => $val_otd, 
          'target' => '95',
-         'indicatorsproj_id'=>$otd->id,
+         'indicatorusers_id'=>$otd->id,
          'annee'=>$row[0],
          'semaine'=>$row[1],
          'mois'=>$row[2],
@@ -117,25 +118,25 @@ $rows = $sheet->rangeToArray('B5:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
           ]);
           $this->info('otd data inserted successfully');
        }
-          $test_rft=DB::table('indicatorsproj_value')
-          ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois')
-          ->join('projects','projects.id','indicatorsproj_value.projects_id')
-          ->join('indicatorsprojs','indicatorsprojs.id','indicatorsproj_value.indicatorsproj_id')
-          ->where('indicatorsprojs.name',$rft->name)
+          $test_rft=DB::table('indicatorsusers_value')
+          ->select('indicatorsusers_value.projects_id','indicatorsusers_value.annee','indicatorsusers_value.semaine','indicatorsusers_value.mois')
+          ->join('projects','projects.id','indicatorsusers_value.projects_id')
+          ->join('indicatorusers','indicatorusers.id','indicatorsusers_value.indicatorusers_id')
+          ->where('indicatorusers.name',$rft->name)
           ->where('projects.project_name',$row[5])
-          ->where('indicatorsproj_value.annee',$row[0])
-          ->where('indicatorsproj_value.semaine',$row[1])
-          ->where('indicatorsproj_value.mois',$row[2])
+          ->where('indicatorsusers_value.annee',$row[0])
+          ->where('indicatorsusers_value.semaine',$row[1])
+          ->where('indicatorsusers_value.mois',$row[2])
           ->count();
   if($test_rft>0)
        {echo "rft data existed";}
   else { 
          $val_rft=(((int)$row[6]-(int)$row[7])/(int)$row[6])*100;
-	     DB::table('indicatorsproj_value')
+	     DB::table('indicatorsusers_value')
 		 ->insert(['projects_id' =>$proj->id,
 		 'value' => $val_rft, 
 		 'target' => '95',
-         'indicatorsproj_id'=>$rft->id,
+         'indicatorusers_id'=>$rft->id,
          'annee'=>$row[0],
          'semaine'=>$row[1],
          'mois'=>$row[2],
@@ -170,25 +171,25 @@ $rows = $sheet->rangeToArray('B5:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                  ]);
                  $this->info('hours data inserted successfully');
                }
-          $test_efficacite=DB::table('indicatorsproj_value')
-             ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois')
-             ->join('projects','projects.id','indicatorsproj_value.projects_id')
-             ->join('indicatorsprojs','indicatorsprojs.id','indicatorsproj_value.indicatorsproj_id')
-             ->where('indicatorsprojs.name',$efficacite->name)
+          $test_efficacite=DB::table('indicatorsusers_value')
+             ->select('indicatorsusers_value.projects_id','indicatorsusers_value.annee','indicatorsusers_value.semaine','indicatorsusers_value.mois')
+             ->join('projects','projects.id','indicatorsusers_value.projects_id')
+             ->join('indicatorusers','indicatorusers.id','indicatorsusers_value.indicatorusers_id')
+             ->where('indicatorusers.name',$efficacite->name)
              ->where('projects.project_name',$row[5])
-             ->where('indicatorsproj_value.annee',$row[0])
-             ->where('indicatorsproj_value.semaine',$row[1])
-             ->where('indicatorsproj_value.mois',$row[2])
+             ->where('indicatorsusers_value.annee',$row[0])
+             ->where('indicatorsusers_value.semaine',$row[1])
+             ->where('indicatorsusers_value.mois',$row[2])
              ->count();
    if($test_efficacite>0)
             {  echo "efficacite data existed";  }
   else{
 	   $val_efficacite=(((int)$row[9])/42)*100;
-		DB::table('indicatorsproj_value')
+		DB::table('indicatorsusers_value')
 		->insert([ 'projects_id' =>$proj->id,
 	     'value' => $val_efficacite, 
 	     'target' => '97',
-         'indicatorsproj_id'=>$efficacite->id,
+         'indicatorusers_id'=>$efficacite->id,
          'annee'=>$row[0],
          'semaine'=>$row[1],
          'mois'=>$row[2],
@@ -197,25 +198,25 @@ $rows = $sheet->rangeToArray('B5:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
           ]);
           $this->info('efficacite data inserted successfully');
          } 
-  $test_efficience=DB::table('indicatorsproj_value')
-  ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois')
-  ->join('projects','projects.id','indicatorsproj_value.projects_id')
-  ->join('indicatorsprojs','indicatorsprojs.id','indicatorsproj_value.indicatorsproj_id')
-  ->where('indicatorsprojs.name',$efficience->name)
+  $test_efficience=DB::table('indicatorsusers_value')
+  ->select('indicatorsusers_value.projects_id','indicatorsusers_value.annee','indicatorsusers_value.semaine','indicatorsusers_value.mois')
+  ->join('projects','projects.id','indicatorsusers_value.projects_id')
+  ->join('indicatorusers','indicatorusers.id','indicatorsusers_value.indicatorusers_id')
+  ->where('indicatorusers.name',$efficience->name)
   ->where('projects.project_name',$row[5])
-  ->where('indicatorsproj_value.annee',$row[0])
-  ->where('indicatorsproj_value.semaine',$row[1])
-  ->where('indicatorsproj_value.mois',$row[2])
+  ->where('indicatorsusers_value.annee',$row[0])
+  ->where('indicatorsusers_value.semaine',$row[1])
+  ->where('indicatorsusers_value.mois',$row[2])
   ->count();
   if($test_efficience>0)
          {echo "data existed";}
   else{
      $val_efficience=(((int)$row[10])/42)*100;
-	     DB::table('indicatorsproj_value')
+	     DB::table('indicatorsusers_value')
 	      ->insert(['projects_id' =>$proj->id,
 		  'value' => $val_efficience, 
 		  'target' => '97',
-          'indicatorsproj_id'=>$efficience->id,
+          'indicatorusers_id'=>$efficience->id,
           'annee'=>$row[0],
           'semaine'=>$row[1],
           'mois'=>$row[2],

@@ -17,6 +17,7 @@ Route::get('/', 'WelcomController@index')->name('welcome');
 Auth::routes();
 
 Route::any('/home', 'HomeController@index')->name('home');
+Route::get('findProjectName','HomeController@findProjectName');
 Route::any('/home2', 'HomeController@index2')->name('home2');
 Route::any('/test', 'HomeController@test')->name('test');
 Route::get('cartographie','CartographieController@cartographie')->name('cartographie');

@@ -1,7 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+.dropdown-submenu {
+  position: relative;
+}
 
+.dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -1px;
+}
+
+.filterDiv {
+  float: left;
+  
+  width: 100px;
+
+  text-align: center;
+  margin: 2px;
+  display: none;
+}
+.show {
+  display: block;
+}
+ 
+</style>
 <script>
 	let monthName = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 	let X;
@@ -128,81 +152,18 @@
 		});
 	}
 </script>
-		
+	<script>
+$(document).ready(function(){
+  $('.dropdown-submenu a.test').on("click", function(e){
+    $(this).next('ul').toggle();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  
+});
+</script>	
   <!-- container -->
-
-<div class="container-fluid">
-
-<div class="row">
-	<div class="col-lg-6 col-md-4 col-sm-6 col-xs-6 demo">
-		<div class="demo-container">
-			<div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 footer-container d-flex">
-				<a  data-toggle="dropdown" class="nav-link dropdown-toggle text-info mt-auto p-2 " href="#">Filtres <b class="caret"></b></a>
-				    <ul class="dropdown-menu" >	
-					<li><a href="#" value="Q"   class="dropdown-item cper text-info">Weekly</a></li>				
-					 <li><a href="#" value="M"   class="dropdown-item cper text-info">Mensual</a></li>
-					 <li><a  href="#" value="T"  class="dropdown-item cper text-info">Trimestrial</a></li>
-					 <li><a  href="#" value="S"  class="dropdown-item cper text-info">Semesterial</a></li>
-				     </ul>
-			</div>
-			<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 image-container">
-			 <div id="demo" class="carousel slide" data-ride="carousel">
-				   <ul class="carousel-indicators"> 
-				        <li data-target="#demo" data-slide-to="0" class="active"></li>
-                    </ul>
-				<?php foreach($datap as $project) { ?>
-					
-			      <?php foreach($project['indics'] as $indic) { ?>
-					
-					<div class="carousel-inner">
-                       <div class="card carousel-item active">
-	                      <div id="containerp<?=$indic['idg'] ?>" style="min-width: 230px; height: 270px; margin: 0 auto"> </div>
-                        </div>
-					
-							 <script>
-								 titre = '<?= "{$indic['name']} Projet {$project['name']}" ?>';
-								 name = '<?= "{$indic['name']}" ?>';
-								 idchart = 'containerp<?="{$indic['idg']}"?>';
-								 
-								 months = [];
-								 <?php foreach($indic['mont ,hs'] as $row) {?>
-								 months.push({"value":<?="{$row->value}"?>, "target":<?="{$row->target}"?>, "created_at":<?= "'{$row->created_at}'" ?>});
-								 <?php } ?>
-								 
-								 mygraphs.push({"idchart":idchart, "titre":titre, "name":name, "months":months});
-
-							 </script> 
-					</div>
-		        <?php }	} ?>
-
-							 <script>
-								 mygraphs.forEach(function (mygraph)
-								  {
-									 updateChart(mygraph, per);
-								 });
-								 
-								 $(".cper").click(function () {
-									 per = $(this).attr("value");
-									 mygraphs.forEach(function (mygraph) {
-										 updateChart(mygraph, per);
-									 });
-								 });
-							 </script>
-				     <a class="carousel-control-prev bg-blue" href="#demo" data-slide="prev"> 
-                         <span class="carousel-control-prev-icon">prev</span>
-                     </a>
-                     <a class="carousel-control-next" href="#demo" data-slide="next">
-                         <span class="carousel-control-next-icon"></span>
-                    </a>	
-			  </div> 
-			</div>
-			<div class="clearfix"></div>
-		</div>
-	</div>
-
-
-
-			<div class="clearfix visible-sm visible-xs"></div>	
+		<div class="clearfix visible-sm visible-xs"></div>	
 	<div class="col-lg-12 col-md-10 col-sm-10 col-xs-10 demo">
 			<div class="demo-container">
 				<div class="col-lg-12  footer-container d-flex">
@@ -387,6 +348,235 @@
 </div> 
   <!-- /Modal filter for gauge-->
   </div> 
+
+	
+<div class="container-fluid">
+
+<div class="row">
+ <div class="col-lg-6 col-md-4 col-sm-6 col-xs-6 demo">
+  <div class="demo-container">
+   <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 footer-container d-flex justify-content-end" >
+	<div>
+	  <button type="button"class="text-info mt-auto p-2 "  data-toggle="modal" data-target=".bd-example-modal-lg">Filter </button>
+	 </div>  
+	</div>
+  </div>
+ 
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-form" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Modal title</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		 
+	      <div class="form-group col-lg-4">
+			 <label>Projects:
+			  <select id="project" name="project" class="form-control projectindic select2" style="width: 300%;"><b class="caret"></b>
+			  <option value="0" disabled="true" selected="true">- Select a project -</option>
+			   <?php foreach($datap as $project) { ?>
+					 <option value="<?="{$project['id']}" ?>"><?="{$project['name']}" ?></option>
+			   <?php } ?>
+			 </select>
+			 </label>
+		   </div>
+		   <div class="form-group col-lg-4">
+    <label>indicators
+        <select width="100%" class="form-control name input-lg" >
+		<option  value="" >- Select an indicator -</option>
+		@foreach($pjindicators as $indicator)
+	  <option  value="" >{{$indicator->name}}</option>
+     @endforeach
+       </select>
+    </label>
+
+</div>
+<div class="form-group col-lg-4">	
+<a data-toggle="dropdown" id="myBtnContainer"class="dropdown-toggle text-info mt-auto p-2 " aria-haspopup="true" aria-expanded="false"href="#">Periode <b class="caret"></b></a>
+<ul class="dropdown-menu ">
+<li><button type="button" class="dropdown-item btn active"onclick="filterSelection('all')" selected="true">All</button></li>
+<li><button type="button" class="dropdown-item btn "onclick="filterSelection('week')" selected="true">Weekly</button></li>
+<li><button type="button" class="dropdown-item btn"onclick="filterSelection('year')" selected="true">Monthly</button></li>
+<li><button type="button" class="dropdown-item btn"onclick="filterSelection('trimestre')" selected="true">Trimestral</button></li>
+<li><button type="button" class="dropdown-item btn"onclick="filterSelection('semestre')" selected="true">Semestral</button></li>
+</lu> 
+</div>
+<div class="container">
+  <div class="form-group filterDiv semestre trimestre year week "> 
+    <label>Years
+      <select  class="form-control name input-sm" >
+
+	 @foreach($pjannee as $annes)
+	  <option value="" >{{$annes->annee}}</option>
+     @endforeach
+     </select>
+    </label>
+</div>
+<div class="form-group filterDiv  week">
+    <label>Months
+      <select  class="form-control name  input-sm" >
+	 @foreach($pjmois as $mois)
+	  <option value="" >{{$mois->mois}}</option>
+     @endforeach
+     </select>
+    </label>
+</div>
+ 
+ 
+  
+ 
+</div>
+</div>
+<script>
+	 $(document).ready(function(){
+
+$(document).on('change','.projectindic',function(){
+console.log("hmm its change");
+
+	var proj_id=$(this).val();
+	// console.log(cat_id);
+	var div=$(this).parent();
+
+	var op=" ";
+
+	$.ajax({
+		type:'get',
+		url:'{!!URL::to('findProjectName')!!}',
+		data:{'id':proj_id},
+		success:function(dataind){
+			console.log('success');
+
+			//console.log(data);
+
+			//console.log(data.length);
+			op+='<option value="0" selected disabled>chose project</option>';
+			for(var i=0;i<dataind.length;i++){
+			op+='<option value="'+dataind[i].id+'">'+dataind[i].name+'</option>';
+		   }
+
+		   div.find('.name').html(" ");
+		   div.find('.name').append(op);
+		},
+		error:function(){
+
+		}
+	});
+
+});
+
+	});
+
+	 
+filterSelection("all")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("filterDiv");
+  if (c == "all") c = "";
+  for (i = 0; i < x.length; i++) {
+    w3RemoveClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+  }
+}
+
+function w3AddClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {element.className += " " + arr2[i];}
+  }
+}
+
+function w3RemoveClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);     
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+// Add active class to the current button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function(){
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+</script>
+     
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 image-container">
+	  <div id="demo" class="carousel slide" data-ride="carousel">
+				   <ul class="carousel-indicators"> 
+				        <li data-target="#demo" data-slide-to="0" class="active"></li>
+                    </ul>
+				<?php foreach($datap as $project) { ?>
+					
+			      <?php foreach($project['indics'] as $indic) { ?>
+					
+					<div class="carousel-inner">
+                       <div class="card carousel-item active">
+	                      <div id="containerp<?=$indic['idg'] ?>" style="min-width: 230px; height: 270px; margin: 0 auto"> </div>
+                        </div>
+					
+							 <script>
+								 titre = '<?= "{$indic['name']} Projet {$project['name']}" ?>';
+								 name = '<?= "{$indic['name']}" ?>';
+								 idchart = 'containerp<?="{$indic['idg']}"?>';
+								 
+								 months = [];
+								 <?php foreach($indic['months'] as $row) {?>
+								 months.push({"value":<?="{$row->value}"?>, "target":<?="{$row->target}"?>, "created_at":<?= "'{$row->created_at}'" ?>});
+								 <?php } ?>
+								 
+								 mygraphs.push({"idchart":idchart, "titre":titre, "name":name, "months":months});
+
+							 </script> 
+					</div>
+		        <?php }	} ?>
+
+							 <script>
+								 mygraphs.forEach(function (mygraph)
+								  {
+									 updateChart(mygraph, per);
+								 });
+								 
+								 $(".cper").click(function () {
+									 per = $(this).attr("value");
+									 mygraphs.forEach(function (mygraph) {
+										 updateChart(mygraph, per);
+									 });
+								 });
+							 </script>
+				     <a class="carousel-control-prev bg-blue" href="#demo" data-slide="prev"> 
+                         <span class="carousel-control-prev-icon">prev</span>
+                     </a>
+                     <a class="carousel-control-next" href="#demo" data-slide="next">
+                         <span class="carousel-control-next-icon"></span>
+                    </a>	
+			  </div> 
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+
+
 
 	
 @endsection
