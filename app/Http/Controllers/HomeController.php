@@ -34,12 +34,7 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
        
-    public function test()
-    {
-       
-       
-        return view('test');
-    }
+    
     public function manager()
     {
         return view('manager');
@@ -52,26 +47,30 @@ class HomeController extends Controller
     {
        //****************************** Filter ***************************** */
      $procs=DB::table('processes')->select('id','name')->get();
-     $mois=DB::table('indicatorsproc_value')->select(DB::raw('MONTH(created_at) nmoi'))->orderBy('created_at')->distinct()->get();
-     $annes=DB::table('indicatorsproc_value')->select(DB::raw('YEAR(created_at) nanne'))->orderBy('created_at')->distinct()->get();
+     $semaines=DB::table('indicatorsproc_value')->select('semaine')->orderBy('semaine')->distinct()->get();
+     $mois=DB::table('indicatorsproc_value')->select('mois')->orderBy('mois')->distinct()->get();
+     $annes=DB::table('indicatorsproc_value')->select('annee')->orderBy('annee')->distinct()->get();
      $fproc=$request->input("fproc") ?: array_slice($procs->pluck('id')->toArray(),-1)[0];
-     $fmois=$request->input("fmois") ?: array_slice($mois->pluck('nmoi')->toArray(),-1)[0];
-     $fanne=$request->input("fanne") ?: array_slice($annes->pluck('nanne')->toArray(),-1)[0];
- 
+     $fsemaine=$request->input("fsemaine") ?: array_slice($semaines->pluck('semaine')->toArray(),-1)[0];
+     $fmois=$request->input("fmois") ?: array_slice($mois->pluck('mois')->toArray(),-1)[0];
+     $fanne=$request->input("fanne") ?: array_slice($annes->pluck('annee')->toArray(),-1)[0];
+    
      $proc=DB::table('processes')->select('id','name')->find($fproc);
  
      $data=array("name" => $proc->name, "indics" => array());	
      
      $rows=DB::table('indicatorsprocs')
              ->join('indicatorsproc_value','indicatorsprocs.id','indicatorsproc_value.indic_id')
-             ->select('indicatorsprocs.id','indicatorsprocs.name','indicatorsproc_value.value','indicatorsproc_value.target','indicatorsproc_value.created_at')
+             ->select('indicatorsprocs.id','indicatorsprocs.name','indicatorsproc_value.value','indicatorsproc_value.target','indicatorsproc_value.semaine','indicatorsproc_value.mois','indicatorsproc_value.annee')
              ->where('indicatorsproc_value.process_id',$proc->id)
-           ->whereMonth('indicatorsproc_value.created_at', $fmois)
-         ->whereYear('indicatorsproc_value.created_at', $fanne)
-             ->orderBy('indicatorsproc_value.created_at')
+             ->where('indicatorsproc_value.mois', $fmois)
+             ->where('indicatorsproc_value.annee', $fanne)
+             ->where('indicatorsproc_value.semaine', $fsemaine)
+             ->orderBy('indicatorsproc_value.semaine')
              ->get();
-   
+          
      $data['indics']=$rows;
+    // dd($data);
  //***************************afficher les graphes des heures des projets */
   // liste des projects qui existes dans les indicatorsproj_value (id, name)
   $projects=DB::table('hours')
@@ -104,13 +103,13 @@ class HomeController extends Controller
                  ->get();
                                  
                  // pk "idg" dans indic? car chaque graphe est un indicator, il faut identifier chaque indicator ajouté
-                 $indics[]=array("idh" => $idh,"semaine" => $hour->semaine,"months"=>$months->toArray());
+                $indics[]=array("idh" => $idh,"semaine" => $hour->semaine,"months"=>$months->toArray());
                  
                  $idh++;
              }
              $objpro['indics']=$indics;
              $datah[]=$objpro;
-            // dd($datah);
+           // dd($datah);
          }
     //***************************afficher les graphes des projets */
     
@@ -181,7 +180,9 @@ class HomeController extends Controller
          'datap'=>$datap,
          'pjindicators'=>$pjindicators,
          'pjannee'=>$pjannee,
-         'pjmois'=>$pjmois]);
+         'pjmois'=>$pjmois,
+         'semaines'=>$semaines,
+         'fsemaine'=>$fsemaine]);
  
     }
     public function findProjectName(Request $request)

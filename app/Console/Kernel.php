@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Console;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
       // $schedule->command('custom:collaborator')
            //   ->daily();
         $schedule->command('custom:command')
-        ->dailyAt('8:15');
+        ->everyMinute();
        
     }
 

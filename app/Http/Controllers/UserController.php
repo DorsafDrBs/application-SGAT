@@ -5,16 +5,45 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Projects;
 use Illuminate\Support\Facades\Input;
 use Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Collection\projectusers;
+
 use DB;
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $data = User::orderBy('id','DESC')->paginate(5);
-        return view('users.index',compact('data'))
+        $data = User::orderBy('id','DESC')
+        ->paginate(5);
+      /* $idh=1;
+      foreach ($users as $user)
+        {
+            $datap=DB::table('users')
+            ->join('project_has_users','project_has_users.users_id',$user->id)
+            ->join('projects','projects.id','project_has_users.projects_id')
+            ->select('projects.project_name')
+            ->get();
+         $objusers=array($users, "usersarray" => array());
+         $indics=array();
+         foreach ($datap as $projet)
+            $projets=DB::table('projects')
+             ->where('id',$projet->id)
+             ->select('project_name')
+             ->get();
+          $usersarray[]=array("idh" => $idh,"project_name" => $projets->toArray());
+                 
+          $idh++;
+      }
+      $objusers['usersarray']=$usersarray;
+      $datah[]=$objusers;
+        dd($data);
+*/
+$projects=Projects::pluck('project_name','project_name')->all();
+        $roles = Role::pluck('name','name')->all();
+        return view('users.index',compact('data','roles','projects'))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 
@@ -26,8 +55,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::pluck('name','name')->all();
-        return view('users.create',compact('roles'));
+        
     }
 
 
@@ -43,7 +71,8 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
+            'projects' => 'required'
         ]);
 
 
@@ -53,6 +82,14 @@ class UserController extends Controller
 
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
+
+        $project=$request->input('projects');
+
+        $user_id = User::where('name',$user->name)->select('id')->get();
+        $project = projects::where('project_name', $project)->select('id')->get();
+
+         
+            $project->projectusers()->attach($user_id);
 
 
         return redirect()->route('users.index')
@@ -81,7 +118,8 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $user = User::find($id);
+       
+        $user = User::findOrFail($request->user_id);
         $roles = Role::pluck('name','name')->all();
         $userRole = $user->roles->pluck('name','name')->all();
 
@@ -97,7 +135,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $this->validate($request, [
             'name' => 'required',
@@ -105,7 +143,6 @@ class UserController extends Controller
             'password' => 'same:confirm-password',
             'roles' => 'required'
         ]);
-
 
         $input = $request->all();
         if(!empty($input['password'])){ 
@@ -115,7 +152,7 @@ class UserController extends Controller
         }
 
 
-        $user = User::find($id);
+        $user = User::findOrFail($request->user_id);
         $user->update($input);
         DB::table('model_has_roles')->where('model_id',$id)->delete();
 
@@ -134,9 +171,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        User::find($id)->delete();
+        
+   $user=User::findOrFail($request->user_id);
+   $user->delete();
         return redirect()->route('users.index')
                         ->with('success','User deleted successfully');
     }

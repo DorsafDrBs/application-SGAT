@@ -12,13 +12,24 @@ class CreateProjetTacheTable extends Migration
      * @return void
      */
     public function up()
-    {
+    { 
+       Schema::create('taches', function (Blueprint $table) {
+         $table->bigIncrements('id');
+         $table->string('tache');
+         $table->timestamps();
+        });
         Schema::create('projet_tache', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tache');
+            $table->unsignedBigInteger('tache_id')->nullable();
+            $table->foreign('tache_id')->references('id')->on('taches');
             $table->unsignedBigInteger('project_id')->nullable();
             $table->foreign('project_id')->references('id')->on('projects');
             $table->timestamps();
+        });
+        Schema::table('indicatorsproj_value', function (Blueprint $table) {
+          
+            $table->unsignedBigInteger('tache_id')->nullable();
+            $table->foreign('tache_id')->references('id')->on('taches');
         });
     }
 

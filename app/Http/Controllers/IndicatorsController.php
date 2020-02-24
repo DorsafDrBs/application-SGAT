@@ -10,7 +10,7 @@ use App\indicatorsproj;
 use App\indicatorsusers;
 use DB;
 use PHPExcel_IOFactory;
-
+use Carbon\Carbon;
 include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
 
 class IndicatorsController extends Controller
@@ -60,23 +60,43 @@ public function importExcel(Request $request)
 
 		// Read all rows of data into an array
 
-		$rows = $sheet->rangeToArray('A2:'.$highestColumn.$highestRow, NULL, TRUE, TRUE);
+		$rows = $sheet->rangeToArray('B7:'.$highestColumn.$highestRow, NULL, TRUE, TRUE);
 
 		// Loop through each row of the worksheet in turn
 		foreach ($rows as $row){ 
       // ** Show row data array 
       
-      $process=DB::table('processes')->where('name',$row[3])->first();
-      $indics=DB::table('indicatorsprocs')->where('detail',$row[0])->select('id','name','detail')->first();
-   
+      $process=DB::table('processes')->where('name',$row[4])->first();
+	  $indics=DB::table('indicatorsprocs')->where('detail',$row[5])->first();
+	  //dd($indics->id);
+	  $test=DB::table('indicatorsproc_value')
+	  ->select('indicatorsproc_value.process_id','indicatorsproc_value.annee','indicatorsproc_value.semaine','indicatorsproc_value.mois')
+	  ->join('processes','processes.id','indicatorsproc_value.process_id')
+	  ->join('indicatorsprocs','indicatorsprocs.id','indicatorsproc_value.indic_id')
+	  ->where('indicatorsprocs.detail',$row[5])
+	  ->where('processes.name',$row[4])
+	  ->where('indicatorsproc_value.annee',$row[0])
+	  ->where('indicatorsproc_value.semaine',$row[1])
+	  ->where('indicatorsproc_value.mois',$row[2])
+	  ->count();
+	  //dd($test);
+	  if($test >0)
+		   {   return redirect()->route('indicators.index')
+            ->with('success','Data existed.');}
+	  else { 
+
 			DB::table('indicatorsproc_value')
-			->insert(['value' => $row[1], 
-             'target' => $row[2],
-             'indic_id' =>$indics->id,
-              'process_id' =>$process->id,
-              'created_at'=>$row[4]
+			->insert([ 'process_id' =>$process->id,
+			  'indic_id' =>$indics->id,
+			  'value' => $row[6], 
+              'target' => $row[7],
+              'annee'=>$row[0],
+              'semaine'=>$row[1],
+              'mois'=>$row[2],
+              'trimestre'=>$row[3],
+		      'created_at'=> Carbon::now(),
               ]);
-         
+	  }
     }
     return redirect()->route('indicators.index')
             ->with('success','Les données a été enregistrés avec succées.');

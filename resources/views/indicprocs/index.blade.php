@@ -8,9 +8,9 @@
                 <div class="row">
                     <div class="col-sm-4">
 						<div class="show-entries">
-               @can(' indic-proc-create')
+   
                 <a class="btn btn-primary rounded border bottom" data-toggle="modal" data-target="#myModal"> Create</a>
-                @endcan
+            
 						</div>						
 					</div>
 					<div class="col-sm-4">
@@ -80,7 +80,7 @@
 	      <div class="modal-body">
           @include('indicprocs.form')
 	     
-	        <a type="submit" class="btn btn-primary">Save</a>
+	        <button type="submit" class="btn btn-primary">Save</button>
 	      </div>
       </form>
     </div>
@@ -103,7 +103,7 @@
 	      		<input type="hidden" name="indicator_id" id="indic_id" value="">
                   @include('indicprocs.form')
 	     
-	        <a type="submit" class="btn btn-primary">Save</a>
+	        <button type="submit" class="btn btn-primary">Save</button>
 	      </div>
       </form>
     </div>

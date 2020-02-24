@@ -19,7 +19,7 @@ Auth::routes();
 Route::any('/home', 'HomeController@index')->name('home');
 Route::get('findProjectName','HomeController@findProjectName');
 Route::any('/home2', 'HomeController@index2')->name('home2');
-Route::any('/test', 'HomeController@test')->name('test');
+Route::any('/test', 'testController@test')->name('test');
 Route::get('cartographie','CartographieController@cartographie')->name('cartographie');
 Route::group(['middleware' => ['auth']], function() {
     Route::get('manager','HomeController@manager')->name('manager');

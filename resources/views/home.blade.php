@@ -32,6 +32,8 @@
 	let Yval;
 	let Ytar;
 	let titre;
+	let target;
+    let week;
 	let name;
 	let per="M";
 	let month;
@@ -174,13 +176,15 @@ $(document).ready(function(){
 				<div class="col-lg-12 image-container d-flex">
 					<?php foreach($data['indics'] as $row) { ?>
 					   
-						    <div class="p-2" id="container<?=$row->id ?>" style="width:300px;height:250px;"> 
+						    <div class="col-md-2 p-2" id="container<?=$row->id ?>" style="width:300px;height:250px;"> 
 							</div>
 	                        <script type="text/javascript">
-		                          month = monthName[new Date(<?= "'{$row->created_at}'" ?>).getMonth()];
-                                   year = new Date(<?= "'{$row->created_at}'" ?>).getFullYear();
-                                  titre = '<?= "{$row->name}" ?> - ' + month + ' ' + year;
-
+		                          month = <?= "'{$row->mois}'" ?>;
+                                   year = <?= "'{$row->annee}'" ?>;
+								   week = <?= "'{$row->semaine}'" ?>;
+                                  titre = '<?= "{$row->name}" ?> - W'+ week+'-'+ month + ' ' + year;
+								  target= 'Target :'+' '+<?="{$row->target}"?>+'%';
+								  Vtar=<?="{$row->target}"?>;
                                   var dom = document.getElementById("container<?="{$row->id}"?>");
                                   var myChart = echarts.init(dom);
                                   var app = {};
@@ -190,15 +194,15 @@ $(document).ready(function(){
 	                                  formatter: "{a} <br/>{b} : {c}%"
 	                                          },                                 
 								     pointer: {
-	                                       length: '80%',
-	                                        width: 7,
+	                                       length: '70%',
+	                                        width: 5,
 	                                        color: 'auto'
 	                                        },
-                                      title: { text: titre,     
+                                      title: { text: titre +"\n"+ target ,
 											 show: true,
-											 left: '50.67%',
+											 left: '56.67%',
 											 right: '30.67%',
-                                             top: '90%',
+                                             top: '70%',
                                              textAlign: 'center',
 	                                         textStyle: {
 												fontFamily: 'sans-serif',
@@ -212,8 +216,8 @@ $(document).ready(function(){
                                                type: 'gauge',
 			                                    center: ["50%", "50%"],
 											   radius: "80%",
-											   startAngle: 140,
-                                               endAngle: -140,
+											   startAngle: 200,
+                                               endAngle: -20,
 											   splitNumber: 10,
 											   min: 0,
 	                                           max: 100,
@@ -222,11 +226,12 @@ $(document).ready(function(){
                                                      show : true,
                                                      lineStyle : { 
                                                          color : [ 
-                                                              [0.5, "#DA462C" ],
-                                                              [ 0.9, "#FF9618" ],
-                                                              [ 1,"#20AE51" ]
-                                                              ],
-													     width : 25
+                                                              [(<?="{$row->target}"?>-5)/100, "#DA462C" ],//rouge
+                                                             [ (<?="{$row->target}"?>-0.05)/100, "#FF9618" ],//jaune
+                                                              [ 1,"#20AE51" ]// vert
+															  ],
+															  
+													     width : 24
 													         }
 														   },
 											  axisTick: {
@@ -266,9 +271,9 @@ $(document).ready(function(){
 	                                                     backgroundColor: 'rgba(0,0,0,0)',
 	                                                     borderWidth: 0,
 	                                                     borderColor: '#ccc',
-	                                                     width: 100,
+	                                                     width: 90,
 	                                                     height: 40,
-	                                                    offsetCenter: ['-60%', 10],
+	                                                    offsetCenter: ['0%', 30],
 	                                                     formatter: '{value}%',
 	                                                     textStyle: {
 	                                                                 color: 'auto',
@@ -321,7 +326,18 @@ $(document).ready(function(){
 								  <label>Month:
 								  <select name="fmois" class="form-control select2" style="width: 100%;">
 								  @foreach($mois as $moi)
-									<option value="{{$moi->nmoi}}" <?=$moi->nmoi==$fmois?'selected':'' ?> >{{$moi->nmoi}}</option>
+									<option value="{{$moi->mois}}" <?=$moi->mois==$fmois?'selected':'' ?> >{{$moi->mois}}</option>
+								  @endforeach
+								  </select>
+								  </label>
+								</div>
+								</div>
+								<div class="form-group col">
+								<div class="input-group">
+								  <label>Week:
+								  <select name="semaines" class="form-control select2" style="width: 100%;">
+								  @foreach($semaines as $semaine)
+									<option value="{{$semaine->semaine}}" <?=$semaine->semaine==$fsemaine?'selected':'' ?> >{{$semaine->semaine}}</option>
 								  @endforeach
 								  </select>
 								  </label>
@@ -332,7 +348,7 @@ $(document).ready(function(){
 								  <label>Year:
 								  <select name="fanne" class="form-control select2" style="width: 100%;">
 								  @foreach($annes as $anne)
-									<option value="{{$anne->nanne}}" <?=$anne->nanne==$fanne?'selected':'' ?> >{{$anne->nanne}}</option>
+									<option value="{{$anne->annee}}" <?=$anne->annee==$fanne?'selected':'' ?> >{{$anne->annee}}</option>
 								  @endforeach
 								  </select>
 								 </label>
@@ -437,7 +453,7 @@ $(document).on('change','.projectindic',function(){
 console.log("hmm its change");
 
 	var proj_id=$(this).val();
-	// console.log(cat_id);
+	// console.log(proj_id);
 	var div=$(this).parent();
 
 	var op=" ";
