@@ -43,6 +43,29 @@
 		    </div>
 		</div>
     </form>
-
+    <div class="row">
+             <div class="col-lg-4 form-group modal-form">
+                    <label>Processe:
+					  <select  id="process_id" name="process_id[]"  class="form-control select2 " style="width:300%;">
+						@foreach($processes as $process)
+						 <option value="{{$process->id}}">{{$process->name}}</option>
+						@endforeach
+					  </select>
+					 </label>
+			 </div>
+             <div class="col-lg-4 form-group modal-form">
+                    <label>Project:
+					<div class="input-group">
+					<input type="text" class="form-control" name="project_name" id="project_name"   >
+				 </div>
+					 </label>
+			 </div>
+    </div>
+  <!-- <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group">
+            <strong>Project:</strong>
+            {!! Form::select('projects[]', $projects,[], array('class' => 'form-control','id'=>'project')) !!}
+        </div>
+    </div>-->
 
 @endsection

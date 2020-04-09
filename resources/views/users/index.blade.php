@@ -37,7 +37,7 @@
    <th>Name</th>
    <th>Email</th>
    <th>Roles</th>
-   <th>Project</th>
+  
    <th width="120px">Actions</th>
  </tr>
  </thead>
@@ -54,7 +54,7 @@
         @endforeach
       @endif
     </td>
-    <td>{{ $user->project_name }}</td>+
+    
     <td >
        
        <a data-usersid="{{$user->id}}" data-myname="{{$user->name}}" data-myemail="{{$user->email}}"  class="edit" title="Edit" data-toggle="modal" data-target="#edit" href="#"><i class="material-icons">&#xE254;</i></a>
@@ -83,7 +83,7 @@
       		{{csrf_field()}}
 	      <div class="modal-body">
           @include('users.form')
-	        <button type="submit" class="btn btn-primary">Save</button>
+          <button type="submit" class="btn btn-primary">Save</button>
 	      </div>
       </form>
     </div>
@@ -105,8 +105,8 @@
 	      <div class="modal-body">
 	      		<input type="hidden" name="user_id" id="users_id" value="">
                   @include('users.form')
-	     
-	        <a type="submit" class="btn btn-primary">Save</a>
+                  <a type="submit" class="btn btn-primary">Save</a>
+	      
 	      </div>
       </form>
     </div>

@@ -22,8 +22,7 @@ class CreateHoursUsersTable extends Migration
             $table->integer('h_r_rl');
             $table->integer('h_r_est');
             $table->integer('h_fact');
-            $table->unsignedBigInteger('project_id')->nullable();
-            $table->foreign('project_id')->references('id')->on('projects');
+           
             $table->unsignedBigInteger('users_id')->nullable();
             $table->foreign('users_id')->references('id')->on('project_has_users');
             $table->timestamps();

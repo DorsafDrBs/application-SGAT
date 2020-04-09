@@ -35,13 +35,14 @@
 	let target;
     let week;
 	let name;
-	let per="M";
 	let month;
 	let year;
 	let cper;
 	let idchart;
 	let months;
 	let mygraphs = [];
+	let max;
+	let per="semaine";
 
 	function updateChart(mygraph, per)
 	{	
@@ -49,43 +50,40 @@
 		Yval = [];
 		Ytar = [];
 		let i=0;
-		let cp=1;
-		let moisper;
-		let sumval=0;
-		let sumtar=0;
-		switch(per) {
-			case "T":
-			  moisper=3;
-			  break;
-			case "S":
-			  moisper=6;
-			  break;
-			default:
-			   moisper=1;
-		}
-
-		mygraph['months'].forEach(function(month) {
+		let prefix=per[0].toUpperCase();
+		
+		//per: annee, trimestre, mois, semaine
+		
+		let sumvals = {};
+		
+		mygraph['months'].forEach(function(row) {
 			
-			sumval+=month["value"];
-			sumtar+=month["target"];
-			i++;
+			let value=row["value"];
+			let target=row["target"];
+			let nbper=row[per];
 			
-			if(i%moisper==0)
-			{ 
-				if(per=="M") {
-					X.push(monthName[new Date(month["created_at"]).getMonth()]);
-				}
-				else { 
-					X.push(per+cp);
-				}
-				Yval.push(Math.ceil((sumval/moisper)  * 100) / 100);
-				Ytar.push(Math.ceil((sumtar/moisper)  * 100) / 100);
-				cp++;
-				sumval=0;
-				sumtar=0;
+			if (nbper in sumvals) {
+				sumvals[nbper]["value"] += value;
+				sumvals[nbper]["target"] += target;
+				sumvals[nbper]["cnt"] += 1;
+			}
+			else {
+				sumvals[nbper] = {value: value, target: target, cnt: 1};
 			}
 		});
+		
+		Object.entries(sumvals).forEach (([nbper, row]) => {
+			let lb = prefix + nbper;
+
+			if(per=="") {
+				lb = monthName[new Date(nbper).getMonth()];
+			}
 			
+			X.push(lb);
+			Yval.push(Math.ceil((row["value"]/row["cnt"]) * 100) / 100);
+			Ytar.push(Math.ceil((row["target"]/row["cnt"]) * 100) / 100);
+		});
+		
 		var chart=Highcharts.chart(mygraph['idchart'], {
 			chart: {
 				zoomType: 'xy'
@@ -176,15 +174,15 @@ $(document).ready(function(){
 				<div class="col-lg-12 image-container d-flex">
 					<?php foreach($data['indics'] as $row) { ?>
 					   
-						    <div class="col-md-2 p-2" id="container<?=$row->id ?>" style="width:300px;height:250px;"> 
+						    <div class="col-sm-3 p-2" id="container<?=$row->id ?>" style="width:250px;height:250px;"> 
 							</div>
 	                        <script type="text/javascript">
 		                          month = <?= "'{$row->mois}'" ?>;
                                    year = <?= "'{$row->annee}'" ?>;
 								   week = <?= "'{$row->semaine}'" ?>;
-                                  titre = '<?= "{$row->name}" ?> - W'+ week+'-'+ month + ' ' + year;
-								  target= 'Target :'+' '+<?="{$row->target}"?>+'%';
-								  Vtar=<?="{$row->target}"?>;
+                                  titre = '<?= "{$row->detail}" ?> - W'+ week+'-'+ month + ' ' + year;
+								  target= 'Target :'+' '+<?="'{$row->operator_cp}'+'{$row->target}'+'{$row->unit}'"?>;
+							
                                   var dom = document.getElementById("container<?="{$row->id}"?>");
                                   var myChart = echarts.init(dom);
                                   var app = {};
@@ -203,6 +201,7 @@ $(document).ready(function(){
 											 left: '56.67%',
 											 right: '30.67%',
                                              top: '70%',
+										
                                              textAlign: 'center',
 	                                         textStyle: {
 												fontFamily: 'sans-serif',
@@ -218,19 +217,26 @@ $(document).ready(function(){
 											   radius: "80%",
 											   startAngle: 200,
                                                endAngle: -20,
-											   splitNumber: 10,
-											   min: 0,
-	                                           max: 100,
-	                                          precision: 0,
+											   min:0,
+									max:<?="{$row->max}"?>,
+											 
+	                                        
 											   axisLine : {
                                                      show : true,
                                                      lineStyle : { 
+														<?php if( ("{$row->operator_cp}"=="<") ||("{$row->operator_cp}"=="<=")||("{$row->target}"=="0")) {?>
                                                          color : [ 
-                                                              [(<?="{$row->target}"?>-5)/100, "#DA462C" ],//rouge
-                                                             [ (<?="{$row->target}"?>-0.05)/100, "#FF9618" ],//jaune
-                                                              [ 1,"#20AE51" ]// vert
+                                                              [(<?="{$row->target}"?>+0.01)/100, "#20AE51" ],//vert
+                                                             [ (<?="{$row->target}"?>+<?="{$row->orange}"?>)/100, "#FF9618" ],//jaune
+                                                              [ <?="{$row->max}"?>, "#DA462C"]// rouge
 															  ],
-															  
+															  <?php } else if( ("{$row->operator_cp}"==">") ||("{$row->operator_cp}"==">=")||("{$row->operator_cp}"=="=")) {?>
+															    color : [ 
+                                                              [(<?="{$row->target}"?>-<?="{$row->orange}"?>)/100, "#DA462C" ],//rouge
+                                                             [ (<?="{$row->target}"?>-0.05)/100, "#FF9618" ],//jaune
+                                                              [ <?="{$row->max}"?>,"#20AE51" ]// vert
+															  ],
+															  <?php }  ?>
 													     width : 24
 													         }
 														   },
@@ -244,27 +250,7 @@ $(document).ready(function(){
 	                                                               type: 'solid'
 	                                                                }
 	                                                     },
-														 axisLabel: {
-	                                                                 show: true,
-																	 formatter: function(v) 
-																	   {
-																		  switch (v + '') 
-																		   {
-	                                                                         case '0':
-	                                                                              return '0';
-	                                                                         case '20':
-	                                                                             return '20';
-	                                                                         case '40':
-	                                                                              return '40';
-	                                                                         case '60':
-	                                                                             return '60';
-	                                                                         case '80':
-	                                                                             return '80';   
-	                                                                         default:
-	                                                                             return '';
-	                                                                        }
-	                                                                     }
-	                                                                  },
+														 
 											   
 											   detail: {
 	                                                     show: true,
@@ -274,7 +260,7 @@ $(document).ready(function(){
 	                                                     width: 90,
 	                                                     height: 40,
 	                                                    offsetCenter: ['0%', 30],
-	                                                     formatter: '{value}%',
+	                                                     formatter: '{value}<?="{$row->unit}"?>',
 	                                                     textStyle: {
 	                                                                 color: 'auto',
 	                                                                  fontSize: 30
@@ -414,10 +400,10 @@ $(document).ready(function(){
 <a data-toggle="dropdown" id="myBtnContainer"class="dropdown-toggle text-info mt-auto p-2 " aria-haspopup="true" aria-expanded="false"href="#">Periode <b class="caret"></b></a>
 <ul class="dropdown-menu ">
 <li><button type="button" class="dropdown-item btn active"onclick="filterSelection('all')" selected="true">All</button></li>
-<li><button type="button" class="dropdown-item btn "onclick="filterSelection('week')" selected="true">Weekly</button></li>
-<li><button type="button" class="dropdown-item btn"onclick="filterSelection('year')" selected="true">Monthly</button></li>
-<li><button type="button" class="dropdown-item btn"onclick="filterSelection('trimestre')" selected="true">Trimestral</button></li>
-<li><button type="button" class="dropdown-item btn"onclick="filterSelection('semestre')" selected="true">Semestral</button></li>
+<li><button type="button" id="per" value="semaine" class="dropdown-item btn "onclick="filterSelection('week')" selected="true">Weekly</button></li>
+<li><button type="button" id="per" value="mois"class="dropdown-item btn"onclick="filterSelection('year')" selected="true">Monthly</button></li>
+<li><button type="button" id="per" value="trimestre" class="dropdown-item btn"onclick="filterSelection('trimestre')" selected="true">Trimestral</button></li>
+<li><button type="button" id="per" value="semestre"class="dropdown-item btn"onclick="filterSelection('semestre')" selected="true">Semestral</button></li>
 </lu> 
 </div>
 <div class="container">
@@ -569,11 +555,11 @@ for (var i = 0; i < btns.length; i++) {
 
 							 <script>
 								 mygraphs.forEach(function (mygraph)
-								  {
+								 {
 									 updateChart(mygraph, per);
 								 });
 								 
-								 $(".cper").click(function () {
+								 $("body #per").click(function () {
 									 per = $(this).attr("value");
 									 mygraphs.forEach(function (mygraph) {
 										 updateChart(mygraph, per);

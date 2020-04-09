@@ -82,14 +82,14 @@ public function importExcel(Request $request)
 	  //dd($test);
 	  if($test >0)
 		   {   return redirect()->route('indicators.index')
-            ->with('success','Data existed.');}
+            ->with('error','Data existed.');}
 	  else { 
 
 			DB::table('indicatorsproc_value')
 			->insert([ 'process_id' =>$process->id,
 			  'indic_id' =>$indics->id,
 			  'value' => $row[6], 
-              'target' => $row[7],
+              'target' => $indics->target,
               'annee'=>$row[0],
               'semaine'=>$row[1],
               'mois'=>$row[2],

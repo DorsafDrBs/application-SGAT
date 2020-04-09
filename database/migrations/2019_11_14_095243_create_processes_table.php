@@ -17,6 +17,11 @@ class CreateProcessesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('detail');
+            $table->unsignedBigInteger('familles_id')->nullable()->unsigned();
+            $table->foreign('familles_id')
+                  ->references('id')
+                  ->on('familles')
+                  ->onDelete('cascade');
             $table->timestamps();
         });
     }

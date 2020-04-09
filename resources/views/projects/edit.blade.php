@@ -3,7 +3,7 @@
 
 
 @section('manager')
-    <div class="row">
+<div class="row">
         <div class="col-lg-12 margin-tb">
             <div class="pull-left">
                 <h2>Edit project</h2>
@@ -27,7 +27,7 @@
     @endif
 
 
-    <form action="{{ route('projects.update') }}" method="POST">
+    <form action="{{ route('projects.update')}}" method="POST">
     	@csrf
         @method('PUT')
 
@@ -55,6 +55,7 @@
 
 
     </form>
+
 
 
 @endsection

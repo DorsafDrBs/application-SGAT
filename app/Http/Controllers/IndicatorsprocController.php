@@ -28,9 +28,13 @@ class IndicatorsprocController extends Controller
         ->select('processes.name','processes.id')
         ->distinct()
         ->get();
+        $units=DB::table('units')
+        ->select('name','unit','id')
+        ->distinct()
+        ->get();
         $indicprocess=indicatorsproc::orderByRaw('created_at','desc')
         ->paginate(5);
-        return view('indicprocs.index',compact('indicprocess','processes'))
+        return view('indicprocs.index',compact('indicprocess','processes','units'))
         ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
@@ -45,7 +49,14 @@ class IndicatorsprocController extends Controller
         request()->validate([
             'name' => 'required',
             'detail' => 'required',
-           
+            'unit' => 'required',
+            'target' => 'required',
+            'orange' => 'required',
+            'periodicity' => 'required',
+            'datasource' => 'required',
+            'operator' => 'required',
+            'min' => 'required',
+            'max' => 'required',
         ]);
 
 

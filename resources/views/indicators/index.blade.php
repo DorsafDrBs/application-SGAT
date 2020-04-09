@@ -70,7 +70,11 @@
      </div>
 </div>
 <!-- Button trigger modal -->
-
+@if ($message = Session::get('error'))
+        <div class="alert alert-success">
+            <p>{{ $message }}</p>
+        </div>
+    @endif
 <!-- Modal1 -->
 <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -81,16 +85,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Whoops!</strong> There were some problems with your contribution.<br><br>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+  
       <form action="{{ route('indicators.index.importExcel') }}" class="form-horizontal" method="post"  enctype="multipart/form-data">{{ csrf_field() }}
       <div class="modal-body">  
        <div class="form-group">
@@ -118,16 +113,8 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Whoops!</strong> I There were some problems with your contribution.<br><br>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+   
+      
       <form action="{{ route('indicators.index.importerExcelprojet') }}" class="form-horizontal" method="post"  enctype="multipart/form-data">{{ csrf_field() }}
       <div class="modal-body">  
        <div class="form-group">
@@ -154,16 +141,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Whoops!</strong>  There were some problems with your contribution.<br><br>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
       <form action="{{ route('indicators.index.importerExcelcollabo') }}" class="form-horizontal" method="post"  enctype="multipart/form-data">{{ csrf_field() }}
       <div class="modal-body">  
        <div class="form-group">

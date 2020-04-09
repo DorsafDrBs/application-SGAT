@@ -164,6 +164,7 @@ return [
         Spatie\Permission\PermissionServiceProvider :: class,
         Collective\Html\HtmlServiceProvider ::class, 
         Intervention\Image\ImageServiceProvider::class,
+        MadeITBelgium\EmailDomainValidation\EmailDomainServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -231,7 +232,7 @@ return [
         'Form'      => 'Illuminate\Html\FormFacade',
      'Html'      => 'Illuminate\Html\HtmlFacade',
      'Image' => Intervention\Image\Facades\Image::class,
-
+     'EmailDomainValidation' => TPWeb\EmailDomainValidation\EmailDomainFacade::class,
     ],
 
 ];

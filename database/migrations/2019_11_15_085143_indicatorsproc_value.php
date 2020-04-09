@@ -23,6 +23,10 @@ class IndicatorsprocValue extends Migration
             $table->unsignedBigInteger('indic_id')->nullable();
           
             $table->foreign('indic_id')->references('id')->on('indicatorsprocs');
+            $table->Year('annee');
+            $table->String('semaine');
+            $table->String('mois');
+            $table->String('trimestre');
             $table->timestamps();
         });
     }

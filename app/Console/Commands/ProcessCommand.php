@@ -47,7 +47,7 @@ class ProcessCommand extends Command
        {
         //indicator's list in process's list 
         $indicators=DB::table('indicatorsprocs')
-        ->select('id','name')
+        ->select('id','name','target')
         ->where('process_id',$process->id)
         ->distinct()
         ->get();
@@ -100,7 +100,7 @@ class ProcessCommand extends Command
 else {
            // dd($moyenne);
  DB::table('indicatorsproc_value')
- ->insert(['target' => '95',
+ ->insert(['target' => $indicator->target,
            'value' => $moyenne, 
        'indic_id'=>$indicator->id,
        'process_id'=>$process->id,
@@ -124,9 +124,5 @@ else {
      $processdata['indics']=$indics;
      $data[]=$processdata;
     } //foreach proc
-
-
-  
-
     }//handle
 }

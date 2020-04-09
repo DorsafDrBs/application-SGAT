@@ -14,11 +14,14 @@ class IndicatorsprojValue extends Migration
     public function up()
     {Schema::create('indicatorsproj_value', function (Blueprint $table) {
         
-      
         $table->integer('projects_id');
         $table->integer('indicatorsproj_id');
         $table->string('value');
         $table->string('target');
+        $table->Year('annee');
+        $table->String('semaine');
+        $table->String('mois');
+        $table->String('trimestre'); 
         $table->timestamps();
     });
     }

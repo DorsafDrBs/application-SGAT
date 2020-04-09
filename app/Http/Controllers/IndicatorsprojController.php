@@ -73,7 +73,8 @@ class IndicatorsprojController extends Controller
        
         $indicatorsproj->update($request->all());
        
-
+           
+     
         return redirect()->route('indicprojs.index')
         ->with('success','Indicator successfully updated ');
 }

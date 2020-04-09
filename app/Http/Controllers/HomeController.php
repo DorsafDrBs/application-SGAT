@@ -35,9 +35,9 @@ class HomeController extends Controller
      */
        
     
-    public function manager()
+    public function parameters()
     {
-        return view('manager');
+        return view('parameters');
     }
     public function cartographie()
     {
@@ -46,31 +46,37 @@ class HomeController extends Controller
     public function index(Request $request)
     {
        //****************************** Filter ***************************** */
-     $procs=DB::table('processes')->select('id','name')->get();
-     $semaines=DB::table('indicatorsproc_value')->select('semaine')->orderBy('semaine')->distinct()->get();
-     $mois=DB::table('indicatorsproc_value')->select('mois')->orderBy('mois')->distinct()->get();
-     $annes=DB::table('indicatorsproc_value')->select('annee')->orderBy('annee')->distinct()->get();
-     $fproc=$request->input("fproc") ?: array_slice($procs->pluck('id')->toArray(),-1)[0];
-     $fsemaine=$request->input("fsemaine") ?: array_slice($semaines->pluck('semaine')->toArray(),-1)[0];
-     $fmois=$request->input("fmois") ?: array_slice($mois->pluck('mois')->toArray(),-1)[0];
-     $fanne=$request->input("fanne") ?: array_slice($annes->pluck('annee')->toArray(),-1)[0];
-    
-     $proc=DB::table('processes')->select('id','name')->find($fproc);
+       
+   $procs=DB::table('processes')->select('id','name')->get();
+   $semaines=DB::table('indicatorsproc_value')->select('semaine')->orderBy('semaine')->distinct()->get();
+   $mois=DB::table('indicatorsproc_value')->select('mois')->orderBy('mois')->distinct()->get();
+   $annes=DB::table('indicatorsproc_value')->select('annee')->orderBy('annee')->distinct()->get();
+   $fproc=$request->input("fproc") ?: $procs->pluck('id')->toArray();
+   $fsemaine=$request->input("fsemaine") ?: $semaines->pluck('semaine')->toArray();
+   $fmois=$request->input("fmois") ?: $mois->pluck('mois')->toArray();
+   $fanne=$request->input("fanne") ?: $annes->pluck('annee')->toArray();
+  
+   $proc=DB::table('processes')->select('id','name')->find($fproc);
+
+   $data=array("name" => $proc->name, "indics" => array());	
+  // $unit=DB::table('unit')->select('id','name');
  
-     $data=array("name" => $proc->name, "indics" => array());	
-     
-     $rows=DB::table('indicatorsprocs')
-             ->join('indicatorsproc_value','indicatorsprocs.id','indicatorsproc_value.indic_id')
-             ->select('indicatorsprocs.id','indicatorsprocs.name','indicatorsproc_value.value','indicatorsproc_value.target','indicatorsproc_value.semaine','indicatorsproc_value.mois','indicatorsproc_value.annee')
-             ->where('indicatorsproc_value.process_id',$proc->id)
-             ->where('indicatorsproc_value.mois', $fmois)
-             ->where('indicatorsproc_value.annee', $fanne)
-             ->where('indicatorsproc_value.semaine', $fsemaine)
-             ->orderBy('indicatorsproc_value.semaine')
-             ->get();
-          
-     $data['indics']=$rows;
-    // dd($data);
+   $rows=DB::table('indicatorsprocs')
+           ->join('indicatorsproc_value','indicatorsprocs.id','indicatorsproc_value.indic_id')
+      
+           ->select('indicatorsprocs.id','indicatorsprocs.detail','indicatorsprocs.target','indicatorsprocs.periodicity','indicatorsprocs.orange',
+           'indicatorsprocs.operator_cp','indicatorsprocs.min','indicatorsprocs.max','indicatorsprocs.unit','indicatorsproc_value.value','indicatorsproc_value.semaine',
+           'indicatorsproc_value.mois','indicatorsproc_value.annee')
+           ->where('indicatorsproc_value.process_id',$proc->id)
+           ->where('indicatorsproc_value.mois', $fmois)
+           ->where('indicatorsproc_value.annee', $fanne)
+           ->where('indicatorsproc_value.semaine', $fsemaine)
+           ->orderBy('indicatorsproc_value.semaine')
+           ->get();
+        
+   $data['indics']=$rows;
+   
+//dd($data);
  //***************************afficher les graphes des heures des projets */
   // liste des projects qui existes dans les indicatorsproj_value (id, name)
   $projects=DB::table('hours')
@@ -109,19 +115,18 @@ class HomeController extends Controller
              }
              $objpro['indics']=$indics;
              $datah[]=$objpro;
-           // dd($datah);
+          //  dd($datah);
          }
-    //***************************afficher les graphes des projets */
-    
+    //***************************afficher les graphes des projets 
          // liste des projects qui existes dans les indicatorsproj_value (id, name)
-         $projects=DB::table('indicatorsproj_value')
-         ->join('projects', 'indicatorsproj_value.projects_id', '=', 'projects.id')
+         $projects=DB::table('associat_indics')
+         ->join('projects', 'associat_indics.project_id', '=', 'projects.id')
          ->select('projects.id', 'projects.project_name')
          ->distinct()
          ->get();
           // liste des indicateurs qui existes dans les indicatorsproj_value (id, name)
-         $pjindicators=DB::table('indicatorsproj_value')
-          ->join('indicatorsprojs', 'indicatorsproj_value.indicatorsproj_id', '=', 'indicatorsprojs.id')
+         $pjindicators=DB::table('associat_indics')
+          ->join('indicatorsprojs', 'associat_indics.indic_id', '=', 'indicatorsprojs.id')
           ->select('indicatorsprojs.id','indicatorsprojs.name')
           ->distinct()
          ->get();
@@ -138,10 +143,10 @@ class HomeController extends Controller
          foreach ($projects as $project)
          {
              // liste des indicators qui existes pour cet project (id, name)
-             $indicators=DB::table('indicatorsproj_value')
-             ->join('indicatorsprojs', 'indicatorsproj_value.indicatorsproj_id', '=', 'indicatorsprojs.id')
+             $indicators=DB::table('associat_indics')
+             ->join('indicatorsprojs', 'associat_indics.indic_id', '=', 'indicatorsprojs.id')
              ->select('indicatorsprojs.id','indicatorsprojs.name')
-             ->where('indicatorsproj_value.projects_id', $project->id)
+             ->where('associat_indics.project_id', $project->id)
              ->distinct()
              ->get();
  
@@ -152,8 +157,8 @@ class HomeController extends Controller
              {
                  // selectionner les dates (mois) avec leurs valeurs & target.., qui sont dans cet $ind et dans cet $project
                  $months=DB::table('indicatorsproj_value')
-                 ->where('indicatorsproj_id', $ind->id)
-                 ->where('projects_id', $project->id)
+                 ->where('associat_indic_id', $ind->id)
+                
                  ->orderBy('annee')
                  ->orderBy('semaine')
                  ->orderBy('mois')
@@ -167,7 +172,7 @@ class HomeController extends Controller
              $objpro['indics']=$indics;
              $datap[]=$objpro;
          }
-        
+       // dd( $datap);
        
          return View('home',
          ['data'=>$data,

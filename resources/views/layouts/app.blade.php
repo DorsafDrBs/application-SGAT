@@ -7,8 +7,7 @@
   <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
   <meta charset="utf-8">
   <!-- Tell the browser to be responsive to screen width -->
- 
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="HandheldFriendly" content="true">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
@@ -388,7 +387,7 @@ $(document).ready(function(){
                                     <a class="dropdown-item" href="{{ route('profile.index') }}">Profile</a>
                               
                                     @can('manager')
-                                    <a class="dropdown-item" href="{{ route('manager') }}">Parameters</a>
+                                    <a class="dropdown-item" href="{{ route('parameters') }}">Parameters</a>
                                 @endcan
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();

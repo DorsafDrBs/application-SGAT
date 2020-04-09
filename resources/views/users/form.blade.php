@@ -40,10 +40,5 @@
             {!! Form::select('roles[]', $roles,[], array('class' => 'form-control','id'=>'role','multiple')) !!}
         </div>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Project:</strong>
-            {!! Form::select('projects[]', $projects,[], array('class' => 'form-control','id'=>'project')) !!}
-        </div>
-    </div>
+   
 </div>

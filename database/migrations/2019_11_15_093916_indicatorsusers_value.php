@@ -13,8 +13,6 @@ class IndicatorsusersValue extends Migration
      */
     public function up()
     {Schema::create('indicatorsusers_value', function (Blueprint $table) {
-        
-      
         $table->integer('users_id');
         $table->integer('indicatorsproj_id');
         $table->string('value');

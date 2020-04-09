@@ -39,7 +39,19 @@ class PermissionTableSeeder extends Seeder
             ['id' => 24, 'name' => 'indic-user-create'],
             ['id' => 25, 'name' => 'indic-user-edit'],
             ['id' => 26, 'name' => 'indic-user-delete'],
-            
+            ['id' => 27, 'name' => 'tache-list'],
+            ['id' => 28, 'name' => 'tache-create'],
+            ['id' => 29, 'name' => 'tache-edit'],
+            ['id' => 30, 'name' => 'tache-delete'],
+            ['id' => 31, 'name' => 'program-list'],
+            ['id' => 32, 'name' => 'program-create'],
+            ['id' => 33, 'name' => 'program-edit'],
+            ['id' => 34, 'name' => 'program-delete'],
+            ['id' => 35, 'name' => 'perimetre-list'],
+            ['id' => 36, 'name' => 'perimetre-create'],
+            ['id' => 37, 'name' => 'perimetre-edit'],
+            ['id' => 38, 'name' => 'perimetre-delete'],
+            ['id' => 39, 'name' => 'project-show'],
          ];
  
  

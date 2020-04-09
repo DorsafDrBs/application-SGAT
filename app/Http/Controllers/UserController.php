@@ -10,20 +10,22 @@ use Illuminate\Support\Facades\Input;
 use Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Collection\projectusers;
-
+use EmailDomainFacade;
 use DB;
+use Validator;
 class UserController extends Controller
 {
     public function index(Request $request)
     {
         $data = User::orderBy('id','DESC')
+    
         ->paginate(5);
       /* $idh=1;
       foreach ($users as $user)
         {
             $datap=DB::table('users')
             ->join('project_has_users','project_has_users.users_id',$user->id)
-            ->join('projects','projects.id','project_has_users.projects_id')
+             ->join('projects','projects.id','project_has_users.projects_id')
             ->select('projects.project_name')
             ->get();
          $objusers=array($users, "usersarray" => array());
@@ -47,7 +49,6 @@ $projects=Projects::pluck('project_name','project_name')->all();
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
@@ -57,8 +58,6 @@ $projects=Projects::pluck('project_name','project_name')->all();
     {
         
     }
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -69,33 +68,27 @@ $projects=Projects::pluck('project_name','project_name')->all();
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|max:255|domain:sogeclairaerospace.com|domainnot:gmail.com,yahoo.com|unique:users',
             'password' => 'required|same:confirm-password',
             'roles' => 'required',
             'projects' => 'required'
         ]);
 
-
         $input = $request->all();
+  
         $input['password'] = Hash::make($input['password']);
 
-
         $user = User::create($input);
+
         $user->assignRole($request->input('roles'));
 
-        $project=$request->input('projects');
+        $project=projects::select('id')->where('project_name',$request->input('projects'))->get();
 
-        $user_id = User::where('name',$user->name)->select('id')->get();
-        $project = projects::where('project_name', $project)->select('id')->get();
-
-         
-            $project->projectusers()->attach($user_id);
-
+          $user->projectusers()->attach($project);
 
         return redirect()->route('users.index')
                         ->with('success','User created successfully');
     }
-
 
     /**
      * Display the specified resource.
@@ -139,7 +132,7 @@ $projects=Projects::pluck('project_name','project_name')->all();
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$id,
+            'email' => 'required|email|domain:sogeclairaerospace.com|domainnot:gmail.com,yahoo.com|unique:users,email,'.$id,
             'password' => 'same:confirm-password',
             'roles' => 'required'
         ]);
