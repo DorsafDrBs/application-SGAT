@@ -58,7 +58,7 @@
           <td> {{ $association->perimetre }} </td>
               <td>
               
-          <a  href="{{ route('tachesindicators.index',$association->id)}}"class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+          <a  href="{{ route('tachesindicators.indexindic',$association->id)}}"class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
            
    @can('project-edit')
                     <a data-myid="{{$association->id}}"

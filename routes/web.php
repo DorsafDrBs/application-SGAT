@@ -31,13 +31,19 @@ Route::group(['middleware' => ['auth']], function() {
     Route::any('profile/profile/update','ProfileController@update')->name('profile.update');
 
     Route::resource('roles/roles','RoleController');
+
     Route::resource('users/users','UserController');
+    Route::get('/json-user-taches','UserController@taches');
+    Route::get('/json-user-programs','UserController@programs');
+    Route::get('/json-user-perimetres','UserController@perimetres');
+    Route::post('users/users/store_projet','UserController@store_Projet')->name('users.store_projet');
+
     Route::resource('process/process','ProcessController');
     Route::resource('perimetres/perimetres','PerimetreController');
     Route::resource('taches/taches','TachesController');
     Route::resource('programs/programs','ProgramsController');
     Route::resource('projects/projects','ProjectsController');
-
+    Route::get('/json-taches','ProjectsController@taches');
     Route::get('/json-programs','ProjectsController@programs');
     Route::get('/json-perimetres','ProjectsController@perimetres');
 
@@ -45,8 +51,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('projects/projects/destroy_indic/{id}','ProjectsController@destroy_indic')->name('projects.destroy_indic');
     Route::post('projects/projects/update_indic','ProjectsController@update_indic')->name('projects.update_indic');
 
-    Route::resource('tachesindicators/tachesindicators','indicatorfortachesController');
-  
+    Route::get('tachesindicators/indexindic/{id}','indicatorfortachesController@indexindic')->name('tachesindicators.indexindic');
+    Route::post('tachesindicators/indexindic/storeindics','indicatorfortachesController@storeindics')->name('tachesindicators.storeindics');
+    Route::patch('tachesindicators/indexindic/update/{test}','indicatorfortachesController@update')->name('tachesindicators.update');
+    Route::delete('tachesindicators/indexindic/destroy/{test}','indicatorfortachesController@destroy')->name('tachesindicators.destroy');
+    
     Route::resource('indicators/indicators','IndicatorsController');
 
     Route::resource('indicprocs/indicprocs','IndicatorsprocController');

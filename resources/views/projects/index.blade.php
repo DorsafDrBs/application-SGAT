@@ -71,7 +71,7 @@
     </table>
     </div>
     <div class="clearfix">
-
+    {!! $projects->render() !!}
     </div>
 </div>
 

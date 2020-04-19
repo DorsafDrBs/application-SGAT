@@ -11,6 +11,9 @@ use App\indicatorsproj;
 use Carbon\Carbon;
 use App\Process;
 use App\Projects;
+use App\taches;
+use App\programs;
+use App\perimetre;
 use DB;
 
 class HomeController extends Controller
@@ -119,8 +122,9 @@ class HomeController extends Controller
          }
     //***************************afficher les graphes des projets 
          // liste des projects qui existes dans les indicatorsproj_value (id, name)
-         $projects=DB::table('associat_indics')
-         ->join('projects', 'associat_indics.project_id', '=', 'projects.id')
+         $projects=DB::table('project_has_taches')
+        
+         ->join('projects', 'project_has_taches.projects_id', '=', 'projects.id')
          ->select('projects.id', 'projects.project_name')
          ->distinct()
          ->get();
@@ -144,9 +148,11 @@ class HomeController extends Controller
          {
              // liste des indicators qui existes pour cet project (id, name)
              $indicators=DB::table('associat_indics')
-             ->join('indicatorsprojs', 'associat_indics.indic_id', '=', 'indicatorsprojs.id')
              ->select('indicatorsprojs.id','indicatorsprojs.name')
-             ->where('associat_indics.project_id', $project->id)
+             ->join('indicatorsprojs', 'associat_indics.indic_id', '=', 'indicatorsprojs.id')
+             ->join('project_has_taches', 'associat_indics.project_id', '=', 'project_has_taches.id')
+             ->join('projects', 'project_has_taches.projects_id', '=', 'projects.id')
+             ->where('projects.id', $project->id)
              ->distinct()
              ->get();
  
@@ -157,13 +163,20 @@ class HomeController extends Controller
              {
                  // selectionner les dates (mois) avec leurs valeurs & target.., qui sont dans cet $ind et dans cet $project
                  $months=DB::table('indicatorsproj_value')
+                 ->select('indicatorsproj_value.*','projects.project_name','indicatorsprojs.name','taches.tache','perimetres.perimetre','programs.program')
+                 ->join('associat_indics', 'associat_indics.id', '=', 'indicatorsproj_value.associat_indic_id')
+                 ->join('indicatorsprojs', 'associat_indics.indic_id', '=', 'indicatorsprojs.id')
+                 ->join('project_has_taches', 'associat_indics.project_id', '=', 'project_has_taches.id')
+                 ->join('projects','projects.id','project_has_taches.projects_id')
+                 ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+                 ->join('programs','programs.id','perimetres.programs_id')
+                 ->join('taches','taches.id','programs.taches_id')
                  ->where('associat_indic_id', $ind->id)
-                
                  ->orderBy('annee')
                  ->orderBy('semaine')
                  ->orderBy('mois')
                  ->get();
-                                 
+            
                  // pk "idg" dans indic? car chaque graphe est un indicator, il faut identifier chaque indicator ajouté
                  $indics[]=array("idg" => $idg, "name" => $ind->name, "months"=>$months->toArray());
                  
@@ -171,9 +184,14 @@ class HomeController extends Controller
              }
              $objpro['indics']=$indics;
              $datap[]=$objpro;
-         }
+             
+         } print_r($datap);
        // dd( $datap);
-       
+       $taches=taches::All();
+      $perimetres=perimetre::All();
+      $programs=programs::All();
+        $projects=projects::All();
+
          return View('home',
          ['data'=>$data,
          'procs'=>$procs,
@@ -187,7 +205,11 @@ class HomeController extends Controller
          'pjannee'=>$pjannee,
          'pjmois'=>$pjmois,
          'semaines'=>$semaines,
-         'fsemaine'=>$fsemaine]);
+         'fsemaine'=>$fsemaine
+         ,'projects'=>$projects
+         ,'taches'=>$taches
+         ,'programs'=>$programs
+         ,'perimetres'=>$perimetres]);
  
     }
     public function findProjectName(Request $request)

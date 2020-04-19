@@ -45,7 +45,7 @@ class ProjectsController extends Controller
             ->join('processes','processes.id','projects.proc_id')
             ->select('processes.name','projects.project_name','projects.id')
             ->orderByRaw('projects.created_at','desc')
-            ->get();
+            ->paginate(5);
             $idh=1;
       //$projects=projects::with('users')->get();
    // $objpro=array("id"=>$project->id,"name" => $project->name,"project_name" => $project->project_name, "users"=>$users->toArray());
@@ -181,7 +181,7 @@ class ProjectsController extends Controller
       ->where('project_has_taches.projects_id',$project->id)
        ->get();
 //dd($associations->id); 
-$groups  = taches::with(['programs', 'programs.perimetres'])->get();
+//$groups  = taches::with(['programs', 'programs.perimetres'])->get();
 //dd($groups);
             return view('projects.show',compact('associations','project','associations','process','processes','indicators','projectslist','taches','programs','perimetres','units'))
           ->with('i', (request()->input('page', 1) - 1) * 5);
@@ -218,6 +218,18 @@ $groups  = taches::with(['programs', 'programs.perimetres'])->get();
      *
      * @return \Illuminate\Http\Response
      */
+    public function taches()
+    {$projects_id = Input::get('project_id');
+        $taches = DB::table('project_has_taches')
+        ->select('taches.tache','taches.id')
+        ->join('projects','projects.id','project_has_taches.projects_id')
+        ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+        ->join('programs','programs.id','perimetres.programs_id')
+        ->join('taches','taches.id','programs.taches_id')
+       ->where("projects.id",$projects_id)
+        ->get();
+        return response()->json($taches);
+    }
     public function programs()
     {$taches_id = Input::get('tache_id');
         $programs = programs::where("taches_id",$taches_id)->get();
@@ -233,7 +245,7 @@ $groups  = taches::with(['programs', 'programs.perimetres'])->get();
       {
         //  dd($id);
     
-          return view('indicator',compact())
+          return view('tachesindicators.index',compact())
       ;
       }
 

@@ -56,7 +56,8 @@
     </td>
     
     <td >
-       
+    <a  href="{{ route('users.show',$user->id )}}"class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+               
        <a data-usersid="{{$user->id}}" data-myname="{{$user->name}}" data-myemail="{{$user->email}}"  class="edit" title="Edit" data-toggle="modal" data-target="#edit" href="#"><i class="material-icons">&#xE254;</i></a>
      		<button  data-usersid="{{$user->id}}" data-toggle="modal" data-target="#delete" width="20px" class="delete"><i class="material-icons ">&#xE872;</i></button>
 						

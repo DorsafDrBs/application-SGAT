@@ -8,10 +8,7 @@ class projects extends Model
 {
     protected $fillable = ['project_name','proc_id' ];
     
-    public function users()
-    {
-        return $this->belongsToMany(User::class,'project_has_users','projects_id','users_id');
-    }
+ 
     public function perimetres() {
 
         return $this->belongsToMany(perimetre::class, 'project_has_taches');

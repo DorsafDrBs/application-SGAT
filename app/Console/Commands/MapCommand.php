@@ -9,7 +9,7 @@ use DB;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
  //Include PHPExcel_IOFactory (EXCEL);
-include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
+//include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
 class MapCommand extends Command
 {
     /**

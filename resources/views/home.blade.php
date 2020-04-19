@@ -74,8 +74,7 @@
 		
 		Object.entries(sumvals).forEach (([nbper, row]) => {
 			let lb = prefix + nbper;
-
-			if(per=="") {
+			if(per=="mois") {
 				lb = monthName[new Date(nbper).getMonth()];
 			}
 			
@@ -365,7 +364,7 @@ $(document).ready(function(){
   </div>
  
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-form" role="document">
+  <div class="modal-dialog modal-lg " role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title">Modal title</h3>
@@ -374,28 +373,109 @@ $(document).ready(function(){
         </button>
       </div>
       <div class="modal-body">
-		 
-	      <div class="form-group col-lg-4">
-			 <label>Projects:
-			  <select id="project" name="project" class="form-control projectindic select2" style="width: 300%;"><b class="caret"></b>
-			  <option value="0" disabled="true" selected="true">- Select a project -</option>
-			   <?php foreach($datap as $project) { ?>
-					 <option value="<?="{$project['id']}" ?>"><?="{$project['name']}" ?></option>
-			   <?php } ?>
-			 </select>
-			 </label>
+	 
+	   {{ Form::open() }}
+	   <div class="row" >
+               <div class="col-lg-4 form-group modal-form">
+                    <label>Project :		
+					  <select  id="projects" name="projects" class="form-control " style="width: 150%;">
+					     <option value="0" disable="true" selected="true"> Select project </option>
+					     @foreach($projects as $key =>$value)
+					       <option value="{{ $value->id }}">{{ $value->project_name }}</option>
+					     @endforeach
+					  </select>
+					  </label>
+		       </div>
+		   <div class="col-lg-6 form-group modal-form ">
+               <label>indicators
+                   <select width="200%" class="form-control name input-lg" >
+		             <option  value="" >- Select an indicator -</option>
+		             @foreach($pjindicators as $indicator)
+	                  <option  value="" >{{$indicator->name}}</option>
+                     @endforeach
+                   </select>
+                </label>
+        	</div>
+      </div>
+	<div class="row" >
+	       <div class="col-lg-4  form-group modal-form">
+                 <label>Tache :
+				  <select name="taches" id="taches"class="form-control"style="width:150px">
+					 <option value="0" disable="true" selected="true"> Select tache </option>
+				  </select>
+			   </label>
 		   </div>
-		   <div class="form-group col-lg-4">
-    <label>indicators
-        <select width="100%" class="form-control name input-lg" >
-		<option  value="" >- Select an indicator -</option>
-		@foreach($pjindicators as $indicator)
-	  <option  value="" >{{$indicator->name}}</option>
-     @endforeach
-       </select>
-    </label>
+           <div class="col-lg-4  form-group modal-form">
+                 <label>Program : 
+				    <select name="programs" id="programs"class="form-control"style="width:150px">
+					 <option value="0" disable="true" selected="true"> Select program </option>
+					</select>
+				</label>
+			</div>
+            <div class="col-lg-4  form-group modal-form">
+                <label>Perimetre : 
+				   <select  id="perimetres" name="perimetres" class="form-control" style="width: 150%;">
+					   <option value="0" disable="true" selected="true"> Select perimetre </option>
+				   </select>
+			    </label>
+			</div>
+
+    {{ Form::close() }}
+	
 
 </div>
+			   <script type="text/javascript">
+  $('#projects').on('change', function(e){
+     console.log(e);
+        var project_id = e.target.value;
+        $.get('/json-user-taches?project_id=' + project_id,function(data) {
+       console.log(data);
+       $('#taches').empty();
+          $('#taches').append('<option value="0" disable="true" selected="true"> Select Tache </option>');
+
+          $('#programs').empty();
+          $('#programs').append('<option value="0" disable="true" selected="true"> Select Program </option>');
+
+          $('#perimetres').empty();
+          $('#perimetres').append('<option value="0" disable="true" selected="true"> Select Perimetre </option>');
+
+          $.each(data, function(index, tachesObj){
+            $('#taches').append('<option value="'+ tachesObj.id +'">'+ tachesObj.tache +'</option>');
+          })
+        });
+      });
+  $('#taches').on('change', function(e){
+     console.log(e);
+        var tache_id = e.target.value;
+        $.get('/json-user-programs?tache_id=' + tache_id,function(data) {
+       console.log(data);
+          $('#programs').empty();
+          $('#programs').append('<option value="0" disable="true" selected="true"> Select Programs </option>');
+
+          $('#perimetres').empty();
+          $('#perimetres').append('<option value="0" disable="true" selected="true"> Select Perimetres </option>');
+
+          $.each(data, function(index, programsObj){
+            $('#programs').append('<option value="'+ programsObj.id +'">'+ programsObj.program +'</option>');
+          })
+        });
+      });
+
+      $('#programs').on('change', function(e){
+        console.log(e);
+        var programs_id = e.target.value;
+        $.get('/json-user-perimetres?programs_id=' + programs_id,function(data) {
+    console.log(data);
+          $('#perimetres').empty();
+          $('#perimetres').append('<option value="0" disable="true" selected="true"> Select Perimetres </option>');
+
+          $.each(data, function(index, perimetresObj){
+            $('#perimetres').append('<option value="'+ perimetresObj.id +'">'+ perimetresObj.perimetre +'</option>');
+          })
+        });
+      });
+
+</script>
 <div class="form-group col-lg-4">	
 <a data-toggle="dropdown" id="myBtnContainer"class="dropdown-toggle text-info mt-auto p-2 " aria-haspopup="true" aria-expanded="false"href="#">Periode <b class="caret"></b></a>
 <ul class="dropdown-menu ">
@@ -407,7 +487,7 @@ $(document).ready(function(){
 </lu> 
 </div>
 <div class="container">
-  <div class="form-group filterDiv semestre trimestre year week "> 
+  <div class="form-group modal-form filterDiv semestre trimestre year week "> 
     <label>Years
       <select  class="form-control name input-sm" >
 
@@ -417,12 +497,12 @@ $(document).ready(function(){
      </select>
     </label>
 </div>
-<div class="form-group filterDiv  week">
-    <label>Months
-      <select  class="form-control name  input-sm" >
-	 @foreach($pjmois as $mois)
-	  <option value="" >{{$mois->mois}}</option>
-     @endforeach
+<div class="col-lg-4 form-group modal-form filterDiv  week">
+    <label>Weeks
+      <select  style="width: 200%;" class="form-control name  input-sm" >
+	 
+	  <option value="" >S1</option>
+
      </select>
     </label>
 </div>
@@ -516,9 +596,9 @@ for (var i = 0; i < btns.length; i++) {
 }
 </script>
      
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+      <div class="modal-footer modal-form">
+      
+        <button type="button" class="btn btn-primary ">Save changes</button>
       </div>
     </div>
   </div>
@@ -544,7 +624,7 @@ for (var i = 0; i < btns.length; i++) {
 								 
 								 months = [];
 								 <?php foreach($indic['months'] as $row) {?>
-								 months.push({"value":<?="{$row->value}"?>, "target":<?="{$row->target}"?>, "created_at":<?= "'{$row->created_at}'" ?>});
+								 months.push({"value":<?="{$row->value}"?>, "target":<?="{$row->target}"?>, "semaine":<?= "'{$row->semaine}'" ?>, "mois":<?="{$row->mois}"?>, "annee":<?= "'{$row->annee}'" ?>, "trimestre":<?="{$row->trimestre}"?>});
 								 <?php } ?>
 								 
 								 mygraphs.push({"idchart":idchart, "titre":titre, "name":name, "months":months});

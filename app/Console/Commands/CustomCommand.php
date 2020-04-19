@@ -9,7 +9,7 @@ use DB;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
   // Include PHPExcel_IOFactory (EXCEL)
-//include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
+include public_path().'/PHPExcel/PHPExcel/IOFactory.php';
 class CustomCommand extends Command
 {
     /**
@@ -70,12 +70,14 @@ class CustomCommand extends Command
     }
         // Read all rows of data into an array  
 // get the column headings as a simple array indexed by column name
-$rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE);
+$rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE);
      // Loop through each row of the worksheet in turnz
       // ** Show row data array 
       $ligne=1; 
        foreach($rows as $row)
-        {	
+        {	  $mois=DB::table('mois')->where('mois',$row[2])->first();
+             $trimestre=DB::table('trimestre')->where('trimestre',$row[3])->first();
+           
             $proj=DB::table('projects')->where('project_name',$row[5])->first();
             $otd=DB::table('indicatorsprojs')->where('name','OTD')->first();
 		      	$rft=DB::table('indicatorsprojs')->where('name','RFT')->first();
@@ -87,21 +89,25 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
             $tta=DB::table('indicatorsprojs')->where('name','TTA')->first();
             $rto=DB::table('indicatorsprojs')->where('name','RTO')->first();
           //liste of tache's project
-            $taches=DB::table('associat_indics')
-             ->select('associat_indics.*','taches.tache')
-             ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+            $data_taches=DB::table('project_has_taches')
+             ->select('taches.tache','perimetres.perimetre','programs.program')
+      
              ->join('projects','projects.id','project_has_taches.projects_id')
              ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
              ->join('programs','programs.id','perimetres.programs_id')
              ->join('taches','taches.id','programs.taches_id')
              ->where('projects.project_name',$row[5])
              ->get();
-         
+           
+    foreach($data_taches as $taches){
   // test if project on the rows selected has tache
- if($taches->tache == 'No taches')
+ if($taches->tache == 'No Taches')
 { //project has "No taches" (taches->id =0)
   // Select data of RFT and test if existed in DB
-  $data_rft=DB::table('indicatorsproj_value')
+  print_r($row[5]); 
+  print_r($taches->tache); 
+  print_r($row[1]); 
+  $test_rft=DB::table('indicatorsproj_value')
   ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
   ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
   ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
@@ -111,59 +117,70 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
   ->where('projects.project_name',$row[5])
   ->where('indicatorsproj_value.annee',$row[0])
   ->where('indicatorsproj_value.semaine',$row[1])
-  ->where('indicatorsproj_value.mois',$row[2])
-  ->get();
-  $test_rft=$data_rft->count();
+  ->where('indicatorsproj_value.mois',$mois->id)
+  ->count();
   if($test_rft>0)
-       {echo "rft data existed \n";}
-  else {    //test if there is data in col "Nombre des livrables consommés au production" to calculate RFT value
+       {
+     echo "  rft data existed \n";}
+  else {  
+     $data_rft=DB::table('associat_indics')
+    ->select('associat_indics.id','associat_indics.target')
+    ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+    ->join('projects','projects.id','project_has_taches.projects_id')
+    ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+    ->where('indicatorsprojs.name',$rft->name)
+    ->where('projects.project_name',$row[5])
+    ->first();
+     //test if there is data in col "Nombre des livrables consommés au production" to calculate RFT value
          if($row[7] != "/" && $row[7]>0 && $row[8]=="/")     
-             {   $val_rft=(((int)$row[7]-(int)$row[14])/(int)$row[7])*100; 
+             {   
+                    $val_rft=number_format(((((int)$row[7]-(int)$row[14])/(int)$row[7])*100), 2 );
                 DB::table('indicatorsproj_value')
                 ->insert([ 'associat_indic_id' =>$data_rft->id,
                            'target' => $data_rft->target,
                            'value' => $val_rft,  
                            'annee'=>$row[0],
                            'semaine'=>$row[1],
-                           'mois'=>$row[2],
-                           'trimestre'=>$row[3],
+                           'mois'=>$mois->id,
+                           'trimestre'=>$trimestre->id,
                             'created_at'=> Carbon::now(),
                          ]);
                      echo "rft data inserted successfully \n";
              }
              //test if there is data in col "Nbre des livrables relachées" to calculate RFT value
          else if($row[8] != "/" && $row[8]>0 && $row[7]=="/")
-             {  $val_rft=(((int)$row[8]-(int)$row[14])/(int)$row[8])*100; 
+             {  $val_rft=number_format(((((int)$row[8]-(int)$row[14])/(int)$row[8])*100), 2 );
                 DB::table('indicatorsproj_value')
                 ->insert(['associat_indic_id' =>$data_rft->id,
                           'target' => $data_rft->target,
                           'value' => $val_rft, 
                           'annee'=>$row[0],
                           'semaine'=>$row[1],
-                          'mois'=>$row[2],
-                          'trimestre'=>$row[3],
+                          'mois'=>$mois->id,
+                          'trimestre'=>$trimestre->id,
                           'created_at'=> Carbon::now(),
                          ]);
                       echo "rft data inserted successfully \n";
              } // calculate RFT value with col "Nbre des Livrable"
          else if($row[6] > 0 && $row[7]=="/" && $row[8]=="/")
-             {  $val_rft=(((int)$row[6]-(int)$row[14])/(int)$row[6])*100; 
+             {  $val_rft=number_format(((((int)$row[6]-(int)$row[14])/(int)$row[6])*100), 2 );
                 DB::table('indicatorsproj_value')
                 ->insert(['associat_indic_id' =>$data_rft->id,
                        'target' => $data_rft->target,
                        'value' => $val_rft, 
                        'annee'=>$row[0],
                        'semaine'=>$row[1],
-                       'mois'=>$row[2], 
-                       'trimestre'=>$row[3],
+                       'mois'=>$mois->id, 
+                       'trimestre'=>$trimestre->id,
                        'created_at'=> Carbon::now(),
                       ]);
+
                       echo "rft data inserted successfully \n"; 
                     }
         } 
         // Select data of OTD and test if existed in DB
-           $data_otd=DB::table('indicatorsproj_value')
-                  ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
+           $test_otd=DB::table('indicatorsproj_value')
+                  ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
                   ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
                   ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
                   ->join('projects','projects.id','project_has_taches.projects_id')
@@ -172,13 +189,20 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                   ->where('projects.project_name',$row[5])
                   ->where('indicatorsproj_value.annee',$row[0])
                   ->where('indicatorsproj_value.semaine',$row[1])
-                  ->where('indicatorsproj_value.mois',$row[2])
-                  ->get();
-                  $test_otd=$data_otd->count();
+                  ->where('indicatorsproj_value.mois',$mois->id)
+                  ->count();
          if($test_otd>0)
-              {echo "otd data existed \n";}
+              {      echo "otd data existed \n";}
          else {
-            $val_otd=(((int)$row[6]-(int)$row[20])/(int)$row[6])*100;
+          $data_otd=DB::table('associat_indics')
+          ->select('associat_indics.id','associat_indics.target')
+          ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+          ->join('projects','projects.id','project_has_taches.projects_id')
+          ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+          ->where('indicatorsprojs.name',$otd->name)
+          ->where('projects.project_name',$row[5])
+          ->first(); 
+            $val_otd=number_format(((((int)$row[6]-(int)$row[20])/(int)$row[6])*100), 2 );
           
            DB::table('indicatorsproj_value')->insert([
                       'associat_indic_id' =>$data_otd->id,
@@ -186,18 +210,23 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                        'value' => $val_otd, 
                        'annee'=>$row[0],
                        'semaine'=>$row[1],
-                       'mois'=>$row[2],
-                       'trimestre'=>$row[3],
+                       'mois'=>$mois->id,
+                       'trimestre'=>$trimestre->id,
                        'created_at'=> Carbon::now(),
                       ]);
-               echo "otd data inserted successfully \n";
+                      print_r($row[1]); 
+               echo" otd data inserted successfully \n";
           
          }		
         }
- else { // MAP project  has taches but haven't programs and perimetres       add condition
+ else if(($taches->perimetre == 'No Perimetres')&& ($taches->tache != 'No Taches') &&(($taches->program == 'No Programs')||($taches->program != 'No Programs')))
+ { // MAP project  has taches but haven't programs and perimetres       add condition
     // Insert FRT data of MAP Projects if not existed 
-     $data_rft=DB::table('indicatorsproj_value')
-                  ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
+    print_r($row[5]); 
+    print_r($taches->tache); 
+    print_r($row[1]); 
+     $test_rft=DB::table('indicatorsproj_value')
+                  ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
                   ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
                   ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
                   ->join('projects','projects.id','project_has_taches.projects_id')
@@ -210,80 +239,93 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                   ->where('projects.project_name',$row[5])
                   ->where('indicatorsproj_value.annee',$row[0])
                   ->where('indicatorsproj_value.semaine',$row[1])
-                  ->where('indicatorsproj_value.mois',$row[2])
-                  ->get();
-                  $test_rft=$data_rft->count(); 
+                  ->where('indicatorsproj_value.mois',$mois->id)
+                  ->count();
+               
          if($test_rft>0)
               {echo "rft "+ $taches->tache + "data existed \n";}
          else {
+           $data_rft=DB::table('associat_indics')
+          ->select('associat_indics.id','associat_indics.target')
+          ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+          ->join('projects','projects.id','project_has_taches.projects_id')
+          ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+          ->where('indicatorsprojs.name',$rft->name)
+          ->where('projects.project_name',$row[5])
+          ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+          ->join('programs','programs.id','perimetres.programs_id')
+          ->join('taches','taches.id','programs.taches_id')
+          ->where('taches.tache',$taches->tache)
+          ->first();
+
           switch($taches->tache):
                   case 'T100':
-                       $val_rft=(((int)$row[9]-(int)$row[15])/(int)$row[9])*100; 
+                       $val_rft=number_format(((((int)$row[9]-(int)$row[15])/(int)$row[9])*100), 2 );
                       DB::table('indicatorsproj_value')
-                     	 ->insert([ 'associat_indic_id' =>$taches->id, 
+                     	 ->insert([ 'associat_indic_id' =>$data_rft->id, 
                          'target' => $data_rft->target,
 		                     'value' => $val_rft, 
 		                      'annee'=>$row[0],
                           'semaine'=>$row[1],
-                          'mois'=>$row[2],
-                          'trimestre'=>$row[3],
+                          'mois'=>$mois->id,
+                          'trimestre'=>$trimestre->id,
 		                     'created_at'=> Carbon::now(),
                         ]);
                           echo " rft "+ $taches->tache + " data inserted successfully \n";
                   break;
                   case 'T200':
-                      $val_rft=(((int)$row[10]-(int)$row[16])/(int)$row[10])*100; 
+                      $val_rft=number_format(((((int)$row[10]-(int)$row[16])/(int)$row[10])*100), 2 );
                             DB::table('indicatorsproj_value')
                                 ->insert([ 'associat_indic_id' =>$data_rft->id,
                                           'target' => $data_rft->target,
                                            'value' => $val_rft, 
                                            'annee'=>$row[0],
                                            'semaine'=>$row[1], 
-                                           'mois'=>$row[2],
-                                           'trimestre'=>$row[3],
+                                           'mois'=>$mois->id,
+                                           'trimestre'=>$trimestre->id,
                                            'created_at'=> Carbon::now(),
                                        ]);
                                  echo "rft "+ $taches->tache + " data inserted successfully \n";
                   break;
                   case 'T300':
-                       $val_rft=(((int)$row[11]-(int)$row[17])/(int)$row[11])*100; 
+                       $val_rft=number_format(((((int)$row[11]-(int)$row[17])/(int)$row[11])*100), 2 );
                             DB::table('indicatorsproj_value')
                                 ->insert(['associat_indic_id' =>$data_rft->id,
                                            'target' => $data_rft->target,
                                            'value' => $val_rft, 
                                            'annee'=>$row[0],
                                            'semaine'=>$row[1],
-                                           'mois'=>$row[2],
-                                           'trimestre'=>$row[3],
+                                           'mois'=>$mois->id,
+                                           'trimestre'=>$trimestre->id,
                                            'created_at'=> Carbon::now(),
                                       ]);
                                 
                              echo "rft" + $taches->tache + "  data inserted successfully \n";
                   break;
                   case'DQ1':
-                     $val_rft=(((int)$row[12]-(int)$row[18])/(int)$row[12])*100; 
+                     $val_rft=number_format(((((int)$row[12]-(int)$row[18])/(int)$row[12])*100), 2 );
                            DB::table('indicatorsproj_value')
                                 ->insert(['associat_indic_id' =>$data_rft->id,
                                           'target' => $data_rft->target,
                                            'value' => $val_rft,   
                                            'annee'=>$row[0],
                                            'semaine'=>$row[1],
-                                           'mois'=>$row[2],
-                                           'trimestre'=>$row[3],
+                                           'mois'=>$mois->id,
+                                           'trimestre'=>$trimestre->id,
                                            'created_at'=> Carbon::now(),
                                        ]);
                               echo "rft "+ $taches->tache + " data inserted successfully \n"; 
                   break;
                   case'E2E':
-                      $val_rft=(((int)$row[13]-(int)$row[19])/(int)$row[13])*100; 
+                      $val_rft=number_format(((((int)$row[13]-(int)$row[19])/(int)$row[13])*100), 2 );
                             DB::table('indicatorsproj_value')
                                     ->insert(['associat_indic_id' =>$data_rft->id,
                                                'target' => $data_rft->target,
                                                'value' => $val_rft, 
                                                'annee'=>$row[0],
                                                'semaine'=>$row[1],
-                                               'mois'=>$row[2],
-                                               'trimestre'=>$row[3],
+                                               'mois'=>$mois->id,
+                                               'trimestre'=>$trimestre->id,
                                                'created_at'=> Carbon::now(),
                                           ]);
                             echo"rft"+ $taches->tache + "  data E2E inserted successfully \n"; 
@@ -293,7 +335,7 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                    endswitch;  
               }    // Insert OTD data of MAP Projects if not existed 
                          $data_otd=DB::table('indicatorsproj_value')
-                             ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
+                             ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
                              ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
                              ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
                              ->join('projects','projects.id','project_has_taches.projects_id')
@@ -306,79 +348,91 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                              ->where('projects.project_name',$row[5])
                              ->where('indicatorsproj_value.annee',$row[0])
                              ->where('indicatorsproj_value.semaine',$row[1])
-                             ->where('indicatorsproj_value.mois',$row[2])
+                             ->where('indicatorsproj_value.mois',$mois->id)
                              ->get();
                              $test_otd=$data_otd->count();
             if($test_otd>0)
                 {echo "OTD"+ $taches->tache + " data existed \n";}
             else { 
+              $data_otd=DB::table('associat_indics')
+              ->select('associat_indics.id','associat_indics.target')
+              ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+              ->join('projects','projects.id','project_has_taches.projects_id')
+              ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+              ->where('indicatorsprojs.name',$otd->name)
+              ->where('projects.project_name',$row[5])
+              ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+              ->join('programs','programs.id','perimetres.programs_id')
+              ->join('taches','taches.id','programs.taches_id')
+              ->where('taches.tache',$taches->tache)
+              ->first();
               switch($taches->tache):
               case 'T100':
-                      $val_otd=(((int)$row[9]-(int)$row[21])/(int)$row[9])*100;
+                      $val_otd=number_format(((((int)$row[9]-(int)$row[21])/(int)$row[9])*100), 2 );
                      DB::table('indicatorsproj_value')
                       ->insert([ 'associat_indic_id' =>$data_otd->id,
                       'target' => $data_otd->target,
                       'value' => $val_otd, 
                       'annee'=>$row[0],
                       'semaine'=>$row[1],
-                      'mois'=>$row[2],
-                      'trimestre'=>$row[3],
+                      'mois'=>$mois->id,
+                      'trimestre'=>$trimestre->id,
                       'created_at'=> Carbon::now(),
                        ]);
                        echo " OTD "+ $taches->tache + "  data inserted successfully \n";
               break;
               case 'T200':
-                   $val_otd=(((int)$row[10]-(int)$row[22])/(int)$row[10])*100;
+                   $val_otd=number_format(((((int)$row[10]-(int)$row[22])/(int)$row[10])*100), 2 );
                      DB::table('indicatorsproj_value')
                         ->insert(['associat_indic_id' =>$otd->id,
                                'target' => $data_otd->target,
                                'value' => $val_otd,  
                                'annee'=>$row[0],
                                'semaine'=>$row[1],
-                               'mois'=>$row[2],
-                               'trimestre'=>$row[3],
+                               'mois'=>$mois->id,
+                               'trimestre'=>$trimestre->id,
                                'created_at'=> Carbon::now(),
                                 ]);
                                 echo "OTD"+ $taches->tache + "  data  inserted successfully \n";
               break;
               case 'T300':
-                     $val_otd=(((int)$row[11]-(int)$row[23])/(int)$row[11])*100;
+                     $val_otd=number_format(((((int)$row[11]-(int)$row[23])/(int)$row[11])*100), 2 );
                      DB::table('indicatorsproj_value')
                         ->insert([ 'associat_indic_id' =>$data_otd->id,
                                'target' => $data_otd->target,
                                'value' => $val_otd,  
                                'annee'=>$row[0],
                                'semaine'=>$row[1],
-                               'mois'=>$row[2],
-                               'trimestre'=>$row[3],
+                               'mois'=>$mois->id,
+                               'trimestre'=>$trimestre->id,
                                'created_at'=> Carbon::now(),
                                 ]);
                   echo "OTD "+ $taches->tache + "data inserted successfully \n";
                break;
                case'DQ1':
-                      $val_otd=(((int)$row[12]-(int)$row[24])/(int)$row[12])*100;
+                      $val_otd=number_format(((((int)$row[12]-(int)$row[24])/(int)$row[12])*100), 2 );
                       DB::table('indicatorsproj_value')
                         ->insert([ 'associat_indic_id' =>$otd->id,
                                'target' => $data_otd->target,
                                'value' => $val_otd,  
                                'annee'=>$row[0],
                                'semaine'=>$row[1],
-                               'mois'=>$row[2],
-                               'trimestre'=>$row[3],
+                               'mois'=>$mois->id,
+                               'trimestre'=>$trimestre->id,
                                'created_at'=> Carbon::now(),
                                 ]);
                                 echo "OTD"+ $taches->tache + " data  inserted successfully \n"; 
                       break;
                       case'E2E':
-                        $val_otd=(((int)$row[13]-(int)$row[25])/(int)$row[13])*100;
+                        $val_otd=number_format(((((int)$row[13]-(int)$row[25])/(int)$row[13])*100), 2 );
                           DB::table('indicatorsproj_value')
                              ->insert([ 'associat_indic_id' =>$data_otd->id,
                                    'target' => $data_otd->target,
                                    'value' => $val_otd, 
                                    'annee'=>$row[0],
                                    'semaine'=>$row[1],
-                                   'mois'=>$row[2],
-                                   'trimestre'=>$row[3],
+                                   'mois'=>$mois->id,
+                                   'trimestre'=>$trimestre->id,
                                    'created_at'=> Carbon::now(),
                                     ]);
                       echo"OTD "+ $taches->tache + " data inserted successfully \n"; 
@@ -387,8 +441,8 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                  echo"add code case tache: {condition}  break ;if you added a new tache \n";  
                     endswitch;  
                   }     // Insert TTA data of MAP Projects if not existed 
-                    $data_tta=DB::table('indicatorsproj_value')
-                            ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
+                    $test_tta=DB::table('indicatorsproj_value')
+                            ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
                              ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
                              ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
                              ->join('projects','projects.id','project_has_taches.projects_id')
@@ -401,12 +455,23 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                              ->where('projects.project_name',$row[5])
                              ->where('indicatorsproj_value.annee',$row[0])
                              ->where('indicatorsproj_value.semaine',$row[1])
-                             ->where('indicatorsproj_value.mois',$row[2])
-                             ->get();
-                       $test_otd=$data_otd->count();
+                             ->where('indicatorsproj_value.mois',$mois->id)
+                             ->count();
              if($test_otd>0)
                    {echo "TTA data existed \n";}
             else {
+              $data_tta=DB::table('associat_indics')
+              ->select('associat_indics.id','associat_indics.target')
+              ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+              ->join('projects','projects.id','project_has_taches.projects_id')
+              ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+              ->where('indicatorsprojs.name',$otd->name)
+              ->where('projects.project_name',$row[5])
+              ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+              ->join('programs','programs.id','perimetres.programs_id')
+              ->join('taches','taches.id','programs.taches_id')
+              ->where('taches.tache',$taches->tache)
+              ->first();
               switch($taches->tache):
                 case 'T100':
                     DB::table('indicatorsproj_value')
@@ -415,36 +480,36 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                         'value' => $row[36], 
                         'annee'=>$row[0],
                         'semaine'=>$row[1],
-                        'mois'=>$row[2],
-                        'trimestre'=>$row[3],
+                        'mois'=>$mois->id,
+                        'trimestre'=>$trimestre->id,
                         'created_at'=> Carbon::now(),
                          ]);
                          echo " TTA "+ $taches->tache + "  data inserted successfully \n";
                 break;
                 case 'T200':
-                     $val_otd=(((int)$row[10]-(int)$row[22])/(int)$row[10])*100;
+                     $val_otd=number_format(((((int)$row[10]-(int)$row[22])/(int)$row[10])*100), 2 );
                        DB::table('indicatorsproj_value')
                          ->insert([ 'associat_indic_id' =>$data_tta->id,
                                  'target' => $data_tta->target,
                                  'value' =>$row[37],  
                                  'annee'=>$row[0],
                                  'semaine'=>$row[1],
-                                 'mois'=>$row[2],
-                                 'trimestre'=>$row[3],
+                                 'mois'=>$mois->id,
+                                 'trimestre'=>$trimestre->id,
                                  'created_at'=> Carbon::now(),
                                   ]);
                                   echo "TTA"+ $taches->tache + "  data  inserted successfully \n";
                 break;
                 case 'T300':
-                       $val_otd=(((int)$row[11]-(int)$row[23])/(int)$row[11])*100;
+                       $val_otd=number_format(((((int)$row[11]-(int)$row[23])/(int)$row[11])*100), 2 );
                        DB::table('indicatorsproj_value')
                            ->insert([ 'associat_indic_id' =>$data_tta->id,
                                 'target' => $data_tta->target,
                                  'value' => $row[38],  
                                  'annee'=>$row[0],
                                  'semaine'=>$row[1],
-                                 'mois'=>$row[2],
-                                 'trimestre'=>$row[3],
+                                 'mois'=>$mois->id,
+                                 'trimestre'=>$trimestre->id,
                                  'created_at'=> Carbon::now(),
                                   ]);
                     echo "TTA "+ $taches->tache + "data inserted successfully \n";
@@ -456,8 +521,8 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                             'value' => $row[39],  
                             'annee'=>$row[0],
                             'semaine'=>$row[1],
-                            'mois'=>$row[2],
-                            'trimestre'=>$row[3],
+                            'mois'=>$mois->id,
+                            'trimestre'=>$trimestre->id,
                             'created_at'=> Carbon::now(),
                              ]);
                echo "TTA "+ $taches->tache + "data inserted successfully \n";
@@ -467,8 +532,8 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                       endswitch;  
           
                 }    // Insert RTO data of MAP Projects if not existed 
-                $data_rto=DB::table('indicatorsproj_value')
-                ->select('indicatorsproj_value.projects_id','indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
+                $test_rto=DB::table('indicatorsproj_value')
+                ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
                  ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
                  ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
                  ->join('projects','projects.id','project_has_taches.projects_id')
@@ -481,12 +546,23 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                  ->where('projects.project_name',$row[5])
                  ->where('indicatorsproj_value.annee',$row[0])
                  ->where('indicatorsproj_value.semaine',$row[1])
-                 ->where('indicatorsproj_value.mois',$row[2])
-                 ->get();
-               $test_rto=$data_rto->count();
+                 ->where('indicatorsproj_value.mois',$mois->id)
+                 ->count();
         if($test_rto>0)
              {echo "RTO data existed \n";}
         else {
+          $data_rto=DB::table('associat_indics')
+              ->select('associat_indics.id','associat_indics.target')
+              ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+              ->join('projects','projects.id','project_has_taches.projects_id')
+              ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+              ->where('indicatorsprojs.name',$otd->name)
+              ->where('projects.project_name',$row[5])
+              ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+              ->join('programs','programs.id','perimetres.programs_id')
+              ->join('taches','taches.id','programs.taches_id')
+              ->where('taches.tache',$taches->tache)
+              ->first();
          switch($taches->tache):
            case 'T100':
             DB::table('indicatorsproj_value')
@@ -495,8 +571,8 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
             'value' => $row[32], 
             'annee'=>$row[0],
             'semaine'=>$row[1],
-            'mois'=>$row[2],
-            'trimestre'=>$row[3],
+            'mois'=>$mois->id,
+            'trimestre'=>$trimestre->id,
             'created_at'=> Carbon::now(),
              ]);
              echo " RTO"+ $taches->tache + "  data inserted successfully \n";
@@ -508,8 +584,8 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                      'value' =>$row[33],  
                      'annee'=>$row[0],
                      'semaine'=>$row[1],
-                     'mois'=>$row[2],
-                     'trimestre'=>$row[3],
+                     'mois'=>$mois->id,
+                     'trimestre'=>$trimestre->id,
                      'created_at'=> Carbon::now(),
                       ]);
                       echo "RTO"+ $taches->tache + "  data  inserted successfully \n";
@@ -521,8 +597,8 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                      'value' => $row[34],  
                      'annee'=>$row[0],
                      'semaine'=>$row[1],
-                     'mois'=>$row[2],
-                     'trimestre'=>$row[3],
+                     'mois'=>$mois->id,
+                     'trimestre'=>$trimestre->id,
                      'created_at'=> Carbon::now(),
                       ]);
         echo "rft "+ $taches->tache + "data inserted successfully \n";
@@ -534,8 +610,8 @@ $rows = $sheet->rangeToArray('C8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                 'value' => $row[35],  
                 'annee'=>$row[0],
                 'semaine'=>$row[1],
-                'mois'=>$row[2],
-                'trimestre'=>$row[3],
+                'mois'=>$mois->id,
+                'trimestre'=>$trimestre->id,
                 'created_at'=> Carbon::now(),
                  ]);
    echo "RTO "+ $taches->tache + "data inserted successfully \n";
@@ -546,35 +622,45 @@ break;
 
     }
   }
+}
   //******************************************************************* */  		
   if (($row[28] > 0) && ($row[29]>0) )
   // Insert hours data after existance test
     { $test_hours=DB::table('hours')
-        ->join('projects','projects.id','hours.project_id')
+        ->join('project_has_taches','project_has_taches.id','hours.project_id')
+        ->join('projects','projects.id','project_has_taches.projects_id')
         ->where('projects.project_name',$row[5])
         ->where('hours.annee',$row[0])
         ->where('hours.semaine',$row[1])
-        ->where('hours.mois',$row[2])
-        ->count();
+        ->where('hours.mois',$mois->id)
+       ->count();
  if($test_hours>0)
         {echo "hours data existed \n ";}
-   else { 
+   else {  
+          
         // insert hours data
+        $projs=DB::table('project_has_taches')
+        ->select('project_has_taches.id')
+         ->join('projects','projects.id','project_has_taches.projects_id')
+         ->where('projects.project_name',$row[5])
+        ->get();
+        foreach($projs as $v)
     DB::table('hours')->insert([
-            'project_id' =>$proj->id,
+            'project_id' =>$v->id,
             'h_r_rl' => $row[28], 
             'h_r_est' => $row[29],
             'h_fact'=>$row[28],
             'annee'=>$row[0],
             'semaine'=>$row[1],
-            'mois'=>$row[2],
-            'trimestre'=>$row[3],
+            'mois'=>$mois->id,
+            'trimestre'=>$trimestre->id,
             'created_at'=> Carbon::now(),
              ]);
              echo"hours data inserted successfully \n";
+               
            }
             // Insert seuil_rentabilite data after existance test
-           $data_seuil_rentabilite=DB::table('indicatorsproj_value')
+           $test_seuil_rentabilite=DB::table('indicatorsproj_value')
             ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
             ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
             ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
@@ -584,27 +670,34 @@ break;
                   ->where('projects.project_name',$row[5])
                   ->where('indicatorsproj_value.annee',$row[0])
                   ->where('indicatorsproj_value.semaine',$row[1])
-                  ->where('indicatorsproj_value.mois',$row[2])
-                  ->get();
-                  $test_seuil_rentabilite=$data_seuil_rentabilite->count();
+                  ->where('indicatorsproj_value.mois',$mois->id)
+                  ->count();
                   
  if($test_seuil_rentabilite>0)
           {  echo "Seuil de rentabilité data existed \n";  }
 else{
-     $val_seuil_rentabilite=(((int)$row[31])*42.5)*4;
+  $data_seuil_rentabilite=DB::table('associat_indics')
+  ->select('associat_indics.id','associat_indics.target')
+  ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+  ->join('projects','projects.id','project_has_taches.projects_id')
+  ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+  ->where('indicatorsprojs.name',$seuil_rentabilite->name)
+  ->where('projects.project_name',$row[5])
+  ->first();
+     $val_seuil_rentabilite=number_format(((((int)$row[31])*8.5)*5), 2 );
       DB::table('indicatorsproj_value')
       ->insert([ 'associat_indic_id' =>$data_seuil_rentabilite->id,
                'target' => $data_seuil_rentabilite->target,
                'value' => $val_seuil_rentabilite, 
                'annee'=>$row[0],
                'semaine'=>$row[1],
-               'mois'=>$row[2],
-               'trimestre'=>$row[3],
+               'mois'=>$mois->id,
+               'trimestre'=>$trimestre->id,
                'created_at'=> Carbon::now(),
                ]);
         echo"Seuil de rentabilité data inserted successfully \n";
        } 
-          $data_efficacite=DB::table('indicatorsproj_value')
+          $test_efficacite=DB::table('indicatorsproj_value')
           ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
           ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
           ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
@@ -614,27 +707,35 @@ else{
              ->where('projects.project_name',$row[5])
              ->where('indicatorsproj_value.annee',$row[0])
              ->where('indicatorsproj_value.semaine',$row[1])
-             ->where('indicatorsproj_value.mois',$row[2])
-             ->get();  
-             $test_efficacite=$data_efficacite->count();
+             ->where('indicatorsproj_value.mois',$mois->id)
+             ->count();
                    
    if($test_efficacite>0)
             {  echo "efficacite data existed \n";  }
   else{
-	   $val_efficacite=(((int)$row[29])/((int)$row[28]));
+    $data_efficacite=DB::table('associat_indics')
+    ->select('associat_indics.id','associat_indics.target')
+    ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+    ->join('projects','projects.id','project_has_taches.projects_id')
+    ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+    ->where('indicatorsprojs.name',$efficacite->name)
+    ->where('projects.project_name',$row[5])
+    ->first();
+
+	   $val_efficacite=number_format(((((int)$row[29])/((int)$row[28]))), 2 );
 		DB::table('indicatorsproj_value')
-		->insert([ 'associat_indic_id' =>$data_seuil_rentabilite->id,
-              'target' => $data_seuil_rentabilite->target,
+    ->insert([ 'associat_indic_id' =>$data_efficacite->id,
+              'target' => $data_efficacite->target,
 	            'value' => $val_efficacite,    
               'annee'=>$row[0],
               'semaine'=>$row[1],
-              'mois'=>$row[2],
-              'trimestre'=>$row[3],
+              'mois'=>$mois->id,
+              'trimestre'=>$trimestre->id,
 	            'created_at'=> Carbon::now(),
              ]);
           echo"efficacite data inserted successfully \n";
          } 
-  $data_efficience_estime=DB::table('indicatorsproj_value')
+  $test_efficience_estime=DB::table('indicatorsproj_value')
   ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
   ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
   ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
@@ -644,25 +745,34 @@ else{
   ->where('projects.project_name',$row[5])
   ->where('indicatorsproj_value.annee',$row[0])
   ->where('indicatorsproj_value.semaine',$row[1])
-  ->where('indicatorsproj_value.mois',$row[2])
-  ->get();
-  $test_efficience_estime= $data_efficience_estime->count();
+  ->where('indicatorsproj_value.mois',$mois->id)
+  ->count();
   if($test_efficience_estime>0)
          {echo "efficience estimée  data existed \n";}
   else{
-     $val_efficience_estime=(((int)$row[29])/ $val_seuil_rentabilite);
+    $data_efficience_estime=DB::table('associat_indics')
+    ->select('associat_indics.id','associat_indics.target')
+    ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+    ->join('projects','projects.id','project_has_taches.projects_id')
+    ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+    ->where('indicatorsprojs.name',$efficience_estime->name)
+    ->where('projects.project_name',$row[5])
+    ->first();
+    $val_seuil_rentabilite=number_format(((((int)$row[31])*8.5)*5), 2 );
+     $val_efficience_estime=number_format(((((int)$row[29])/ $val_seuil_rentabilite)), 2 );
 	     DB::table('indicatorsproj_value')
-	      ->insert(['associat_indic_id' =>$data_seuil_rentabilite->id,
-                'target' => $data_seuil_rentabilite->target,
+	      ->insert(['associat_indic_id' =>$data_efficience_estime->id,
+                'target' => $data_efficience_estime->target,
+                'value' => $val_efficience_estime, 
 		            'annee'=>$row[0],
                 'semaine'=>$row[1],
-                'mois'=>$row[2],
-                'trimestre'=>$row[3],
+                'mois'=>$mois->id,
+                'trimestre'=>$trimestre->id,
 		            'created_at'=> Carbon::now(),
                 ]);
            echo" efficience estimée data inserted successfully \n";
     }
-    $data_efficience_facture=DB::table('indicatorsproj_value')
+    $test_efficience_facture=DB::table('indicatorsproj_value')
     ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
     ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
     ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
@@ -672,20 +782,29 @@ else{
   ->where('projects.project_name',$row[5])
   ->where('indicatorsproj_value.annee',$row[0])
   ->where('indicatorsproj_value.semaine',$row[1])
-  ->where('indicatorsproj_value.mois',$row[2])
-  ->get();
-  $test_efficience_facture=$data_efficience_facture->count();
+  ->where('indicatorsproj_value.mois',$mois->id)
+  ->count();
   if($test_efficience_facture>0)
          {echo "efficience facturée data existed \n ";}
   else{
-     $val_efficience_facture=(((int)$row[30])/ $val_seuil_rentabilite);
+    $data_efficience_facture=DB::table('associat_indics')
+    ->select('associat_indics.id','associat_indics.target')
+    ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+    ->join('projects','projects.id','project_has_taches.projects_id')
+    ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+    ->where('indicatorsprojs.name',$efficience_facture->name)
+    ->where('projects.project_name',$row[5])
+    ->first();
+    $val_seuil_rentabilite=number_format(((((int)$row[31])*8.5)*5), 2 );
+     $val_efficience_facture=number_format(((((int)$row[30])/ $val_seuil_rentabilite)), 2 );
 	     DB::table('indicatorsproj_value')
-	      ->insert(['associat_indic_id' =>$data_seuil_rentabilite->id,
-                  'target' => $data_seuil_rentabilite->target,
+	      ->insert(['associat_indic_id' =>$data_efficience_facture->id,
+                  'target' => $data_efficience_facture->target,  
+                   'value' => $val_efficience_facture, 
 		              'annee'=>$row[0],
                   'semaine'=>$row[1],
-                  'mois'=>$row[2],
-                  'trimestre'=>$row[3],
+                  'mois'=>$mois->id,
+                  'trimestre'=>$trimestre->id,
 		              'created_at'=> Carbon::now(),
                    ]);
            echo" efficience facturée data inserted successfully \n";
@@ -702,36 +821,43 @@ else{
      
     }
      if ($row[30]>0 && $row[30]!="/")
-    { $data_production=DB::table('indicatorsproj_value')
-      ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
-            ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
-            ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
-            ->join('projects','projects.id','project_has_taches.projects_id')
-            ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+    { $test_production=DB::table('indicatorsproj_value')
+     ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
+     ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
+     ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+     ->join('projects','projects.id','project_has_taches.projects_id')
+     ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
      ->where('indicatorsprojs.name',$production->name)
      ->where('projects.project_name',$row[5])
      ->where('indicatorsproj_value.annee',$row[0])
      ->where('indicatorsproj_value.semaine',$row[1])
-     ->where('indicatorsproj_value.mois',$row[2])
-     ->get();
-     $test_production=$data_production->count();
+     ->where('indicatorsproj_value.mois',$mois->id)
+     ->count();
      if($test_production>0)
             {echo " PRODUCTION data existed \n ";} 
      else{
-       
+      $data_production=DB::table('associat_indics')
+      ->select('associat_indics.id','associat_indics.target')
+      ->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+      ->join('projects','projects.id','project_has_taches.projects_id')
+      ->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
+      ->where('indicatorsprojs.name',$production->name)
+      ->where('projects.project_name',$row[5])
+      ->first();
+      
           DB::table('indicatorsproj_value')
            ->insert(['associat_indic_id' =>$data_production->id,
-                    'target' => $data_seuil_rentabilite->target,
+                    'target' => $data_production->target,
                      'value' => $row[30], 
                      'annee'=>$row[0],
                      'semaine'=>$row[1],
-                     'mois'=>$row[2],
-                     'trimestre'=>$row[3],
+                     'mois'=>$mois->id,
+                     'trimestre'=>$trimestre->id,
                      'created_at'=> Carbon::now(),
                     ]);
               echo" PRODUCTION data inserted successfully \n";
-       } }
-} 
-}
-
+       } 
+      }
+        }
+    }
 } 

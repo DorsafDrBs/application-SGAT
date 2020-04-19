@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Projects;
+use App\taches;
+use App\programs;
+use App\perimetre;
 use Illuminate\Support\Facades\Input;
 use Hash;
 use Spatie\Permission\Models\Role;
@@ -46,7 +49,7 @@ class UserController extends Controller
 $projects=Projects::pluck('project_name','project_name')->all();
         $roles = Role::pluck('name','name')->all();
         return view('users.index',compact('data','roles','projects'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+       ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 
     /**
@@ -96,10 +99,26 @@ $projects=Projects::pluck('project_name','project_name')->all();
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        $user = User::find($id);
-        return view('users.show',compact('user'));
+    public function show(Request $request,$id)
+    {$user=User::find($id);
+          $users = DB::table('users')
+        ->select('projects.project_name','taches.tache','programs.program','perimetres.perimetre','project_has_taches.id')
+        ->join('project_has_users','project_has_users.users_id','users.id')
+        ->join('project_has_taches','project_has_taches.id','project_has_users.projects_id')
+        ->join('projects','projects.id','project_has_taches.projects_id')
+        ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+        ->join('programs','programs.id','perimetres.programs_id')
+        ->join('taches','taches.id','programs.taches_id')
+        ->where('users.id',$id)
+      ->paginate(5);
+   
+      $tachesd=taches::All();
+      $perimetres=perimetre::All();
+      $programs=programs::All();
+        $projects=projects::All();
+       // dd($users);
+        return view('users.show',compact('user','users','projects','taches','programs','perimetres'))
+         ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 
 
@@ -172,4 +191,52 @@ $projects=Projects::pluck('project_name','project_name')->all();
         return redirect()->route('users.index')
                         ->with('success','User deleted successfully');
     }
+
+  /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store_projet(Request $request)
+    {
+        $this->validate($request, [
+            'project_id' => 'required',
+            'perimetre_id' => 'required',
+            'users_id' => 'required',
+           
+        ]);
+        
+
+        return redirect()->route('users.index')
+                        ->with('success','User created successfully');
+    }
+     /**
+     * Get Ajax Request and restun Data
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function taches()
+    {$projects_id = Input::get('project_id');
+        $taches = DB::table('project_has_taches')
+        ->select('taches.tache','taches.id')
+        ->join('projects','projects.id','project_has_taches.projects_id')
+        ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+        ->join('programs','programs.id','perimetres.programs_id')
+        ->join('taches','taches.id','programs.taches_id')
+       ->where("projects.id",$projects_id)
+        ->get();
+        return response()->json($taches);
+    }
+    public function programs()
+    {$taches_id = Input::get('tache_id');
+        $programs = programs::where("taches_id",$taches_id)->get();
+        return response()->json($programs);
+    }
+    public function perimetres(){
+        $programs_id = Input::get('programs_id');
+        $perimetres = perimetre::where('programs_id', '=', $programs_id)->get();
+        return response()->json($perimetres);
+      }
+  
 }
