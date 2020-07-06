@@ -70,7 +70,7 @@ class MapCommand extends Command
     }
         // Read all rows of data into an array  
 // get the column headings as a simple array indexed by column name
-$rows = $sheet->rangeToArray('C1:' .$highestColumn.$highestRow, NULL, TRUE, TRUE);
+$rows = $sheet->rangeToArray('B4:' .$highestColumn.$highestRow, NULL, TRUE, TRUE);
      // Loop through each row of the worksheet in turnz
       // ** Show row data array 
       $ligne=1; 
@@ -123,16 +123,17 @@ foreach ($rows as $i => $row) {
 				if(!empty($value))
                 
              {
-				  //echo "$value $collvl1 $collvl2 $collvl3 $collvl4 ";
+				 // echo "$value $collvl1 $collvl2 $collvl3 $collvl4 ";
 				$verif=DB::table('associat_indics')
-				->select('perimetres.perimetre','taches.tache','programs.program','associat_indics.id','associat_indics.target')
-				->join('perimetres','perimetres.id','associat_indics.assoc_t_id')
-				->join('programs','programs.id','perimetres.programs_id')
-				->join('taches','taches.id','programs.taches_id')
-				->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
-				->join('projects','projects.id','project_has_taches.project_id')
+				->select('associat_indics.id','projects.project_name','taches.tache','programs.program','perimetres.perimetre','indicatorsprojs.name','associat_indics.target')
 				->join('indicatorsprojs','indicatorsprojs.id','associat_indics.indic_id')
 				->join('units','units.id','associat_indics.unit_id')
+				->join('project_has_taches','project_has_taches.id','associat_indics.project_id')
+				->join('projects','projects.id','project_has_taches.projects_id')
+				->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+				->join('programs','programs.id','perimetres.programs_id')
+				->join('taches','taches.id','programs.taches_id')
+				
 				->where('indicatorsprojs.name',$collvl1)
 				->where('projects.project_name',$row[5])
 				->where('programs.program',$collvl2)
@@ -141,10 +142,14 @@ foreach ($rows as $i => $row) {
 				->get();
 			
 			foreach ($verif as $v) 
-			
+			{ 
+				echo "Semaine:"; print_r($row[1]);echo "\n";
+				print_r($verif);
+				echo "value:"; print_r($value);
+		//	echo "$value $collvl1 $collvl2 $collvl3 $collvl4 \n";
 			 DB::table('indicatorsproj_value')
-			 ->insert([ 'associat_indic_id' =>$verif->id,
-						'target' => $verif->target,
+			 ->insert([ 'associat_indic_id' =>$v->id,
+						'target' => $v->target,
 						'value' => $value,  
 						'annee'=>$row[0],
 						'semaine'=>$row[1],
@@ -152,9 +157,9 @@ foreach ($rows as $i => $row) {
 						'trimestre'=>$row[3],
 						 'created_at'=> Carbon::now(),
 					  ]);
-				  echo "$verif data inserted successfully \n";
+				  echo " data inserted successfully \n";
 		 
-	 
+			}
 	  		
 				}
               

@@ -26,15 +26,15 @@ class Kernel extends ConsoleKernel
     {
      
         $schedule->command('custom:command')
-        ->daily();
+        ->daily(); 
         $schedule->command('map:command')
-        ->daily();
+        ->daily(); 
         $schedule->command('custom:collaborator')
-        ->daily();
+        ->daily(); 
         $schedule->command('mapcollaborator:command')
-        ->daily();
+        ->daily(); 
         $schedule->command('command:process')
-        ->daily();
+        ->daily(); 
     }
 
     /**

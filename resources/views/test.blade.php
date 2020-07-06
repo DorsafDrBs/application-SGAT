@@ -1,12 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-     <!--<td> @if(!empty($project->users()))
-        @foreach($project->users() as $key=>$v)
-           <label class="badge badge-success">{{ $v->name }}</label>
-        @endforeach
-      @endif </td>-->
-<style>.highcharts-figure, .highcharts-data-table table {
+ 
+<style>
+.highcharts-figure, .highcharts-data-table table {
     min-width: 310px; 
     max-width: 800px;
     margin: 1em auto;
@@ -43,29 +40,95 @@
 .highcharts-data-table tr:hover {
     background: #f1f7ff;
 }
-</style>à
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
-<?php foreach($data['indics'] as $row) { ?>
-<figure class="highcharts-figure">
-    <div  id="container<?=$row->id ?>"></div>
-    
-</figure>
-<?php }?>
+</style>
 <script>
- month = <?= "'{$row->mois}'" ?>;
-	  year = <?= "'{$row->annee}'" ?>;
-	  titre = '<?= "Projet {$project['name']}" ?>'+ month + ' ' + year;;
-								 name = '<?= "{$indic['name']}" ?>';
-								 idchart = 'containerp<?="{$indic['idg']}"?>';
-								 
-								 months = [];
-								 <?php foreach($indic['months'] as $row) {?>
-								 months.push({"h_r_rl":<?="{$row->h_r_rl}"?>, "h_r_est":<?="{$row->h_r_est}"?>, "h_fact":<?= "'{$row->h_fact}'" ?>});
-								 <?php } ?>
-Highcharts.chart('container', {
+	let monthName = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+	let X;
+	let Hreel;
+	let Hestime;
+    let Hfacture;
+	let titre;
+	let target;
+    let week;
+	let name;
+	let month;
+	let year;
+	let cper;
+	let idchart;
+	let months;
+	let mygraphs = [];
+	let max;
+	let per="semaine";
+
+	function updateChart(mygraph, per)
+	{	
+		X = [];
+		Hreel = [];
+		Hestime = [];
+        Hfacture = [];
+		let i=0;
+		let prefix=per[0].toUpperCase();
+		
+		//per: annee, trimestre, mois, semaine
+			let sumvals = {};
+		
+		mygraph['months'].forEach(function (row) {
+
+			let cprofound=false;
+	$("body .cpro").each(function (){
+			let selectcpro = $(this);
+		     let cproval=selectcpro.val();
+		     let cproname=selectcpro.attr("name");
+		 //value of select : type string (pas multiple)
+		 if((typeof cproval=="string" || typeof cproval=="number") && row[cproname]===cproval)
+		 {
+			 cprofound=true;
+			
+		 }
+		 else 
+		 { console.log(cproval); 
+			 cproval.forEach(function (val)
+			{
+			   if(row[cproname]==val)
+			   {
+				   cprofound=true;
+				  return false ;
+			   }
+			});
+		 }
+		 return !cprofound;
+			});
+			if(!cprofound)
+			return true;
+			let h_r_rl=row["h_r_rl"];
+			let h_r_est=row["h_r_est"];
+            let h_r_fact=row["h_r_fact"];
+			let nbper=row[per];
+			
+			if (nbper in sumvals) {
+				sumvals[nbper]["h_r_rl"] += h_r_rl;
+				sumvals[nbper]["h_r_est"] += h_r_est;
+                sumvals[nbper]["h_r_fact"] += h_r_fact;
+				sumvals[nbper]["cnt"] += 1;
+			}
+			else {
+				sumvals[nbper] = {h_r_rl: h_r_rl,h_r_est: h_r_est, h_r_fact: h_r_fact, cnt: 1};
+			}
+		});
+		
+		Object.entries(sumvals).forEach (([nbper, row]) => {
+			let lb = prefix + nbper;
+			if(per=="mois") {
+				lb = monthName[new Date(nbper).getMonth()];
+			}
+			
+			X.push(lb);
+			Hreel.push(Math.ceil((row["h_r_rl"]/row["cnt"]) * 100) / 100);
+			Hestime.push(Math.ceil((row["h_r_est"]/row["cnt"]) * 100) / 100);
+            Hfacture.push(Math.ceil((row["h_r_fact"]/row["cnt"]) * 100) / 100);
+		});
+		
+		var chart=Highcharts.chart(mygraph['idchart'], {
     chart: {
         type: 'bar'
     },
@@ -76,7 +139,7 @@ Highcharts.chart('container', {
         text: ''
     },
     xAxis: {
-        categories: ['Africa', 'America', 'Asia'],
+        categories:X,
         title: {
             text: null
         }
@@ -84,7 +147,7 @@ Highcharts.chart('container', {
     yAxis: {
         min: 0,
         title: {
-            text: 'Population (millions)',
+            text: 'Population (hours)',
             align: 'high'
         },
         labels: {
@@ -92,7 +155,7 @@ Highcharts.chart('container', {
         }
     },
     tooltip: {
-        valueSuffix: ' millions'
+        valueSuffix: ' hours'
     },
     plotOptions: {
         bar: {
@@ -118,177 +181,213 @@ Highcharts.chart('container', {
     },
     series: [{
         name: 'Heures realisées',
-        data: [107, 131, 635, 203]
+        data: Hreel // 
+    }, {
+        name: 'Heures Estimée ',
+        data: Hestime
     }, {
         name: 'Heures Facturées',
-        data: [133, 156, 947, 408]
-    }, {
-        name: 'Heures Estimée',
-        data: [814, 841, 3714, 727]
+        data: Hfacture
     }]
 });
-</script>
-@endsection
+    }
+    </script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
 
-@extends('manager')
-
-
-@section('manager')
-    <div class="row">
-        <div class="col-lg-12 margin-tb">
-            <div class="pull-left">
-                <h2> Show project</h2>
-            </div>
-            <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('projects.index') }}"> Back</a>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>process:</strong>
-                @foreach ($process as $proc)
-                {{ $proc->name}}
-                @endforeach
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Project:</strong>
-                {{ $project->project_name }}
-            </div>
-        </div>
-    </div>
-    @if ($message = Session::get('success'))
-<div class="alert alert-success">
-  <p>{{ $message }}</p>
-</div>
-@endif
-    @can('project-create')
-         <a class="btn btn-primary rounded border bottom" data-toggle="modal" data-target="#myModal"> Create</a>
-        @endcan
-    <table class="table table-bordered">
-       
-       <thead>
-        <tr>
-            <th>No</th>
-            <th>Indicators</th>
-            <th>Taches</th>
-            <th>Programs</th>
-            <th>Perimetres</th>
-            <th>Targets</th>
-        
-            <th width="180px">Action</th>
-        </tr>
-        </thead>
-        <tbody> 
-	    @foreach ($groups as $association)
-	    <tr>
-	        <td>{{ ++$i }}</td>
-	        <td>{{ $association->name }}</td>
-	        <td>{{ $association->tache }}</td>
-            <td>{{ $association->program }}</td>
-            <td>{{ $association->perimetre }}</td>
-            <td>{{ $association->operator_cp }}{{ $association->target }}{{ $association->unit }}</td>
-	 <td>
- 
-                    @can('project-edit')
-                    <a data-myid="{{$association->id}}"data-myindic=" {{ $association->name }}" 
-                    data-myassoc="{{$association->perimetre}}"
-                    data-mytache="{{ $association->tache }}"data-myprogram="{{ $association->program }}"
-                 data-mytarget="{{$association->target}}"data-myunit="{{$association->unit}}"
-                 data-myoperator="{{$association->operator_cp}}"  data-myorange="{{$association->orange}}"
-                 
-                 
-                  data-toggle="modal" data-target="#edit" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                    @endcan
-          
-                   
-      </td>
-	 </tr>
-	    @endforeach
-        </tbody>
-    </table>
-    </div>
-    <div class="clearfix">
-
- <!-- Modal -->
-<div class="modal fade  bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
+<!--modal filter for chart bar projects-->
+	<div class="modal fade bd-example-modal-lg" id="filterModalproject" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg " role="document">
     <div class="modal-content">
       <div class="modal-header">
-        
-        <h4 class="modal-title" id="myModalLabel">Add New Indicator to {{ $project->project_name }}</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Modal title</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <form action="{{route('projects.store_indic')}}" method="post">
-      		{{csrf_field()}}
-	      <div class="modal-body">
-          @include('projects.form')
-                   
-	  
-	      </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- Modal -->
-<div class="modal fade bd-example-modal-lg" id="edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-      <h4 class="modal-title" id="myModalLabel">Edit  indicator of {{ $project->project_name }}</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        
+      <div class="modal-body">
+	 
+	   {{ Form::open() }}
+	   <div class="row" >
+               <div class="col-lg-4 form-group modal-form">
+                    <label>Project :		
+				 <select  id="projects" name="project_name" class="form-control cpro" style="width: 150%;">
+					    
+					     @foreach($projects as $key =>$value)
+					       <option value="{{ $value->project_name }}">{{ $value->project_name }}</option>
+					     @endforeach
+					  </select>
+					  </label>
+		       </div>
+		   
       </div>
-      <form action="{{route('projects.update_indic','test')}}" method="post">
-      		{{method_field('patch')}}
-      		{{csrf_field()}}
-	      <div class="modal-body">
-	      	<input type="hidden" name="association_id" id="association_id" value="">
-                  @include('projects.form')
-	     
-	        <button type="submit" class="btn btn-primary">Save</button>
-	      </div>
-      </form>
-    </div>
-  </div>
-</div>
-<script>
-$('#edit').on('show.bs.modal',function(event){
-    var button=$(event.relatedTarget)
-    var association_id=button.data('myid')
-    var assoc_t_id=button.data('myassoc')
-    var indic_id=button.data('myindic')
-    var target=button.data('mytarget')
-    var unit_id=button.data('myunit')
-    var operator_cp=button.data('myoperator')
-    var orange=button.data('myorange')
-    var program=button.data('myprogram')
-    var tache=button.data('mytache')
+	<div class="row" >
+	       <div class="col-lg-4  form-group modal-form">
+                 <label>Tache :
+				  <select name="tache" id="taches"class="form-control cpro"style="width:150px">
+					
+				  </select>
+			   </label>
+		   </div>
+           <div class="col-lg-4  form-group modal-form">
+                 <label>Program : 
+				    <select name="program" id="programs"class="form-control cpro"style="width:150px">
+					
+					</select>
+				</label>
+			</div>
+            <div class="col-lg-4  form-group modal-form">
+                <label>Perimetre : 
+				   <select  id="perimetre" name="perimetre" class="form-control cpro" style="width: 150%;">
+		
+				   </select>
+			    </label>
+			</div>
+         {{ Form::close() }}
+	   </div>
+ <script type="text/javascript">
+   $('#projects').on('change', function(e){
+	 console.log(e);
+    var project_name = e.target.value;
+        $.get('/json-home-taches?project_name=' + project_name,function(data) {
+       console.log(data);
+       $('#taches').empty();
+          $('#taches').append('<option value="" disable="false" selected="true">  </option>');
 
-    var modal=$(this)
-    modal.find('.modal-body #association_id').val(association_id);
-    modal.find('.modal-body #assoc_t_id').val(assoc_t_id);
-    modal.find('.modal-body #indic_id').val(indic_id);
-    modal.find('.modal-body #target').val(target);
-    modal.find('.modal-body #unit_id').val(unit_id);
-    modal.find('.modal-body #operator_cp').val(operator_cp);
-    modal.find('.modal-body #orange').val(orange);
-    modal.find('.modal-body #program').val(program);
-    modal.find('.modal-body #tache').val(tache);
-}) 
-/*$('#delete').on('show.bs.modal',function(event){
-    var button=$(event.relatedTarget)
-   
-    var associationd_id=button.data('associationid')
-    var modal=$(this)
-    modal.find('.modal-body #associationd_id').val(associationd_id);
- 
-})
-*/
+          $('#programs').empty();
+          $('#programs').append('<option value="" disable="false" selected="true">  </option>');
+
+          $('#perimetres').empty();
+        $.each(data, function(index, tachesObj){
+            $('#taches').append('<option value="'+ tachesObj.tache +'">'+ tachesObj.tache +'</option>');
+          })
+        });
+      });
+   $('#taches').on('change', function(e){
+     console.log(e);
+        var tache_name = e.target.value;
+        $.get('/json-home-programs?tache_name=' + tache_name,function(data) {
+       console.log(data);
+          $('#programs').empty();
+          $('#programs').append('<option value="" disable="false" selected="true"> </option>');
+
+          $('#perimetres').empty();
+
+          $.each(data, function(index, programsObj){
+            $('#programs').append('<option value="'+ programsObj.program +'">'+ programsObj.program +'</option>');
+          })
+        });
+      });
+
+    $('#programs').on('change', function(e){
+        console.log(e);
+        var programs_name = e.target.value;
+        $.get('/json-home-perimetres?programs_name=' + programs_name,function(data) {
+        console.log(data);
+          $('#perimetres').empty();
+         
+          $.each(data, function(index, perimetresObj){
+            $('#perimetres').append('<option value="'+ perimetresObj.perimetre +'">'+ perimetresObj.perimetre +'</option>');
+          })
+        });
+      });
 </script>
+<div class="row"> 
+<div class="col-lg-4 form-group modal-form"> 
+     <label>Periode
+	 <select name="periode"  class="form-control name cpro input-sm" >
+	     <option  id="per" value="semaine" class=" cpro" >Weekly</option>
+		 <option  id="per" value="mois"class=" cpro ">Monthly</option>
+		 <option id="per" value="trimestre" class="cpro " >Trimestral</option>
+		 <option id="per" value="semestre"class="cpro " >Semestral</option>
+       </select>
+      </label>
+   </div>
+   <div class="col-lg-4 form-group modal-form"> 
+     <label>Years
+      <select name="annee"  class="form-control name cpro input-sm" >
+        @foreach($pjannee as $annes)
+	     <option value="" >{{$annes->annee}}</option>
+         @endforeach
+       </select>
+      </label>
+   </div>
+   <div class="col-lg-4 form-group modal-form ">
+      <label>Weeks
+      <select  name="semaine"multiple style="width: 200%;" class="form-control name cpro input-sm" >
+	  @foreach($pjsemaine as $semaine)
+	     <option value="" >{{$semaine->semaine}}</option>
+         @endforeach
+      </select>
+      </label>
+     </div>
+</div>
+
+</div>
+</div>
+
+
+      <div class="modal-footer modal-form">
+        <button type="button" id="filtersearchbtn" class="btn btn-primary">Save changes</button>
+		<script>
+	
+	$("body .filtersearchbtn").click(function () {
+			 mygraphs.forEach(function (mygraph) {
+										 updateChart(mygraph, per);
+									 });
+								 });
+	 </script>
+      </div>
+    </div>
+  </div>
+  </div>
+	<!--end modal filter -->
+	
+	<div  class = " container-fluid " >
+
+<div class="row">
+<div class="clearfix visible-sm visible-xs"></div>	
+	<div class="col-lg-12 col-md-10 col-sm-10 col-xs-10 demo">
+			<div class="demo-container">
+				<div class="col-lg-12  footer-container d-flex">
+
+       <h3 class="mr-auto p-2" >Projects </h3>
+	   <a href="#"class="p-2 text-info bg- "  data-toggle="modal" data-target="#filterModalproject">Filter </a>
+	 </div>  
+
+  <div class="col-lg-12 ">
+  <?php foreach($datah as $project) { ?>
+     <?php foreach($project['weeks'] as $week) { ?>
+		<div class="col-lg-12" >
+	        <div class="col-lg-12" height="500px"id="containerp<?=$week['idh'] ?>" style="min-width: 300px; height: 300px; margin: 0 auto"> </div>
+         <script>
+            
+	         year = <?= "'{$week['annee']}'" ?>;
+	         titre = '<?= "Projet {$project['name']}" ?> '+ year;
+		     idchart = 'containerp<?="{$week['idh']}"?>';
+			    months = [];
+		   <?php foreach($week['months'] as $row) {?>
+             months.push({"h_r_rl":<?="{$row->h_r_rl}"?>, "h_r_est":<?="{$row->h_r_est}"?>, "h_fact":<?= "'{$row->h_fact}'" ?>,
+                         "project_name":<?="'{$row->project_name}'"?>,"tache":<?="'{$row->tache}'"?>,"program":<?="'{$row->program}'"?>,
+						 "perimetre":<?="'{$row->perimetre}'"?>,  "semaine":<?= "'{$row->semaine}'" ?>, "mois":<?="{$row->mois}"?>, 
+                         "annee":<?= "'{$row->annee}'" ?>, "trimestre":<?="{$row->trimestre}"?>});
+		   <?php } ?>
+				 mygraphs.push({"idchart":idchart, "titre":titre, "name":name, "months":months});
+         </script> 
+			</div>
+         </div>
+    <?php }	} ?>
+                <script>
+					  mygraphs.forEach(function (mygraph)
+						  {	 updateChart(mygraph, per);  });
+						   $("body #per").click(function () {
+							 per = $(this).attr("value");
+							 });
+				 </script>
+                 </div>
+			<div class="clearfix"></div>
+		</div>
+		</div>
+		</div>
+	</div>	
 @endsection
+

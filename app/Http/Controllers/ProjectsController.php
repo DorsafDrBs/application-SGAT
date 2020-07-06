@@ -179,7 +179,7 @@ class ProjectsController extends Controller
       ->join('perimetres','perimetres.programs_id','programs.id')
       ->join('project_has_taches','project_has_taches.perimetre_id','perimetres.id')
       ->where('project_has_taches.projects_id',$project->id)
-       ->get();
+       ->paginate(5);
 //dd($associations->id); 
 //$groups  = taches::with(['programs', 'programs.perimetres'])->get();
 //dd($groups);

@@ -18,31 +18,55 @@ class testController extends Controller
 {
       
     public function index()
-    { //***************************afficher les graphes des heures des projets */
+    {
+    $projects=projects::all();
+    
+    $pjannee=DB::table('indicatorsproj_value')
+    ->select('annee')
+    ->distinct()
+    ->get();
+ 
+    $pjsemaine=DB::table('semaine')
+    ->select('semaine','id')
+    ->distinct()
+    ->get();
+     //***************************afficher les graphes des heures des projets */
         // liste des projects qui existes dans les indicatorsproj_value (id, name)
-        $projects=DB::table('hours')
-        ->join('projects', 'hours.project_id', '=', 'projects.id')
-        ->select('projects.id', 'projects.project_name')
+        $projectsfohours=DB::table('project_has_taches')
+        ->select('project_has_taches.id', 'projects.project_name','taches.tache','perimetres.perimetre','programs.program')
+        ->join('projects', 'project_has_taches.projects_id', '=', 'projects.id')
+        ->select('project_has_taches.id', 'projects.project_name','taches.tache','perimetres.perimetre','programs.program')
+        ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+        ->join('programs','programs.id','perimetres.programs_id')
+        ->join('taches','taches.id','programs.taches_id')
         ->distinct()
         ->get();
+        
         $idh=1;
-        foreach ($projects as $project)
+        foreach ($projectsfohours as $project)
                {
                    // liste des indicators qui existes pour cet project (id, name)
-                   $hours=DB::table('hours')
-                   ->select('id','semaine')
-                   ->where('hours.project_id', $project->id)
+                   $hoursweeks=DB::table('hours')
+                   ->select('id','semaine','mois','trimestre','annee')
+                   ->where('project_id', $project->id)
                    ->distinct()
                    ->get();
        
                    // ajouter un projet avec son name dans la liste projets + declarer sa liste des indicators (graphes)
-                   $objpro=array("id"=>$project->id,"name" => $project->project_name, "indics" => array());
-                   $indics=array();
-                   foreach ($hours as $hour)
+                   $objpro=array("id"=>$project->id,"name" => $project->project_name,"tache"=>$project->tache,"program"=>$project->program,"perimetre"=>$project->perimetre, "weeks" => array());
+                   $weeks=array();
+                   foreach ($hoursweeks as $week)
                    {
                        // selectionner les dates (mois) avec leurs valeurs & target.., qui sont dans cet $ind et dans cet $project
                        $months=DB::table('hours')
-                       ->where('id', $hour->id)
+                       ->select('hours.*','projects.project_name','taches.tache','perimetres.perimetre','programs.program')
+                       ->join('project_has_taches', 'hours.project_id', '=', 'project_has_taches.id')
+                       ->join('projects','projects.id','project_has_taches.projects_id')
+                       ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+                       ->join('programs','programs.id','perimetres.programs_id')
+                       ->join('taches','taches.id','programs.taches_id')
+                    
+                       
                        ->where('project_id', $project->id)
                        ->orderBy('annee')
                        ->orderBy('semaine')
@@ -50,15 +74,14 @@ class testController extends Controller
                        ->get();
                                        
                        // pk "idg" dans indic? car chaque graphe est un indicator, il faut identifier chaque indicator ajouté
-                      $indics[]=array("idh" => $idh,"semaine" => $hour->semaine,"months"=>$months->toArray());
+                      $weeks[]=array("idh" => $idh,"semaine" => $week->semaine,"mois" => $week->mois,"annee" => $week->annee,"months"=>$months->toArray());
                        
                        $idh++;
                    }
-                   $objpro['indics']=$indics;
+                   $objpro['weeks']=$weeks;
                    $datah[]=$objpro;
-             // dd($datah);
-               }
-        return view('test',compact('datah'));
+                 }  //dd($datah);
+        return view('test',compact('datah','projects','pjannee','pjsemaine'));
     
     }
 

@@ -52,7 +52,7 @@
   
 
 <div class="row" >
-            <input type="hidden" name="users_id" id="userss_id" value=" {{ $user->id }}">
+            <input type="hidden" name="users_id" id="users_id" value=" {{ $user->id }}">
 			   {{ Form::open() }}
                <div class="col form-group modal-form">
                     <label>Project :		 </label>

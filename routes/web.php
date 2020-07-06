@@ -17,6 +17,9 @@ Route::get('/', 'WelcomController@index')->name('welcome');
 Auth::routes();
 
 Route::any('/home', 'HomeController@index')->name('home');
+Route::get('/json-home-taches','HomeController@taches');
+Route::get('/json-home-programs','HomeController@programs');
+Route::get('/json-home-perimetres','HomeController@perimetres');
 
 Route::get('findProjectName','HomeController@findProjectName');
 Route::any('/home2', 'HomeController@index2')->name('home2');

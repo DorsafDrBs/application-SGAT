@@ -37,8 +37,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function projects()
+    public function Project_has_taches()
     {
-        return $this->belongsToMany(Projects::class,'project_has_users','users_id','projects_id');
+        return $this->belongsToMany(Project_has_taches::class,'project_has_users','users_id','projects_id');
     }
 }

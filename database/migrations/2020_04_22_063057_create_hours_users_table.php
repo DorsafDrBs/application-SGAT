@@ -13,7 +13,7 @@ class CreateHoursUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('hours_users', function (Blueprint $table) {
+        Schema::create('users_hours', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->Year('annee');
             $table->String('semaine');
@@ -22,7 +22,6 @@ class CreateHoursUsersTable extends Migration
             $table->integer('h_r_rl');
             $table->integer('h_r_est');
             $table->integer('h_fact');
-           
             $table->unsignedBigInteger('users_id')->nullable();
             $table->foreign('users_id')->references('id')->on('project_has_users');
             $table->timestamps();

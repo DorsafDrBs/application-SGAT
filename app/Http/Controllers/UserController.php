@@ -9,6 +9,7 @@ use App\Projects;
 use App\taches;
 use App\programs;
 use App\perimetre;
+use App\project_has_taches;
 use Illuminate\Support\Facades\Input;
 use Hash;
 use Spatie\Permission\Models\Role;
@@ -112,7 +113,7 @@ $projects=Projects::pluck('project_name','project_name')->all();
         ->where('users.id',$id)
       ->paginate(5);
    
-      $tachesd=taches::All();
+      $taches=taches::All();
       $perimetres=perimetre::All();
       $programs=programs::All();
         $projects=projects::All();
@@ -201,12 +202,21 @@ $projects=Projects::pluck('project_name','project_name')->all();
     public function store_projet(Request $request)
     {
         $this->validate($request, [
-            'project_id' => 'required',
-            'perimetre_id' => 'required',
+            'projects' => 'required',
+            'perimetres' => 'required',
             'users_id' => 'required',
            
         ]);
-        
+        $users=projects::find( $request->input('users_id'));
+        $project=projects::find( $request->input('projects'));
+        $perimetre=perimetre::find( $request->input('perimetres'));
+        $projects=DB::table('project_has_taches')
+        ->select('projects_id','perimetre_id')
+        ->where('projects_id',$project)
+          ->where('perimetre_id',$perimetre);
+       project_has_taches::with('project_has_taches')->find('18');
+
+//$users->project_has_taches()->attach($projects);
 
         return redirect()->route('users.index')
                         ->with('success','User created successfully');
@@ -225,6 +235,7 @@ $projects=Projects::pluck('project_name','project_name')->all();
         ->join('programs','programs.id','perimetres.programs_id')
         ->join('taches','taches.id','programs.taches_id')
        ->where("projects.id",$projects_id)
+       ->distinct()
         ->get();
         return response()->json($taches);
     }

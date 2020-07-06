@@ -63,7 +63,7 @@ class MapCollaboratorCommand extends Command
             }
                 // Read all rows of data into an array  
         // get the column headings as a simple array indexed by column name
-        $rows = $sheet->rangeToArray('C1:' .$highestColumn.$highestRow, NULL, TRUE, TRUE);
+        $rows = $sheet->rangeToArray('B1:' .$highestColumn.$highestRow, NULL, TRUE, TRUE);
              // Loop through each row of the worksheet in turnz
               // ** Show row data array 
               $ligne=1; 
@@ -134,9 +134,12 @@ class MapCollaboratorCommand extends Command
                         ->where('taches.tache',$collvl4)
                         ->where('perimetres.perimetre',$collvl3)
                         ->get();
-                    
+                        
                     foreach ($verif as $v) 
                     
+				echo "Semaine:"; print_r($row[1]);echo "\n";
+				print_r($verif);
+				echo "value:"; print_r($value);
                      DB::table('indicatorsproj_value')
                      ->insert([ 'associat_users_indic_id' =>$verif->id,
                                 'target' => $verif->target,

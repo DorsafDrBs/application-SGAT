@@ -82,13 +82,19 @@ class HomeController extends Controller
 //dd($data);
  //***************************afficher les graphes des heures des projets */
   // liste des projects qui existes dans les indicatorsproj_value (id, name)
-  $projects=DB::table('hours')
-  ->join('projects', 'hours.project_id', '=', 'projects.id')
-  ->select('projects.id', 'projects.project_name')
+  $projectsfohours=DB::table('project_has_taches')
+  ->select('project_has_taches.id', 'projects.project_name','taches.tache','perimetres.perimetre','programs.program')
+
+  ->join('projects', 'project_has_taches.projects_id', '=', 'projects.id')
+  ->select('project_has_taches.id', 'projects.project_name','taches.tache','perimetres.perimetre','programs.program')
+  ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+  ->join('programs','programs.id','perimetres.programs_id')
+  ->join('taches','taches.id','programs.taches_id')
   ->distinct()
   ->get();
+  
   $idh=1;
-  foreach ($projects as $project)
+  foreach ($projectsfohours as $project)
          {
              // liste des indicators qui existes pour cet project (id, name)
              $hours=DB::table('hours')
@@ -98,7 +104,7 @@ class HomeController extends Controller
              ->get();
  
              // ajouter un projet avec son name dans la liste projets + declarer sa liste des indicators (graphes)
-             $objpro=array("id"=>$project->id,"name" => $project->project_name, "indics" => array());
+             $objpro=array("id"=>$project->id,"name" => $project->project_name,"tache"=>$project->tache,"program"=>$project->program,"perimetre"=>$project->perimetre, "indics" => array());
              $indics=array();
              foreach ($hours as $hour)
              {
@@ -118,14 +124,15 @@ class HomeController extends Controller
              }
              $objpro['indics']=$indics;
              $datah[]=$objpro;
-          //  dd($datah);
-         }
+           }  // dd($datah);
     //***************************afficher les graphes des projets 
          // liste des projects qui existes dans les indicatorsproj_value (id, name)
          $projects=DB::table('project_has_taches')
-        
          ->join('projects', 'project_has_taches.projects_id', '=', 'projects.id')
-         ->select('projects.id', 'projects.project_name')
+         ->select('project_has_taches.id', 'projects.project_name','taches.tache','perimetres.perimetre','programs.program')
+         ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+         ->join('programs','programs.id','perimetres.programs_id')
+         ->join('taches','taches.id','programs.taches_id')
          ->distinct()
          ->get();
           // liste des indicateurs qui existes dans les indicatorsproj_value (id, name)
@@ -142,25 +149,29 @@ class HomeController extends Controller
          ->select('mois')
          ->distinct()
          ->get();
+         $pjsemaine=DB::table('semaine')
+         ->select('semaine','id')
+         ->distinct()
+         ->get();
          $idg=1;
          $datap=array();
          foreach ($projects as $project)
          {
              // liste des indicators qui existes pour cet project (id, name)
              $indicators=DB::table('associat_indics')
-             ->select('indicatorsprojs.id','indicatorsprojs.name')
+             ->select('associat_indics.id','indicatorsprojs.name')
              ->join('indicatorsprojs', 'associat_indics.indic_id', '=', 'indicatorsprojs.id')
              ->join('project_has_taches', 'associat_indics.project_id', '=', 'project_has_taches.id')
-             ->join('projects', 'project_has_taches.projects_id', '=', 'projects.id')
-             ->where('projects.id', $project->id)
+             ->where('project_has_taches.id', $project->id)
+          
              ->distinct()
              ->get();
  
              // ajouter un projet avec son name dans la liste projets + declarer sa liste des indicators (graphes)
-             $objpro=array("id"=>$project->id,"name" => $project->project_name, "indics" => array());
+             $objpro=array("id"=>$project->id,"name" => $project->project_name,"tache"=>$project->tache,"program"=>$project->program,"perimetre"=>$project->perimetre, "indics" => array());
              $indics=array();
              foreach ($indicators as $ind)
-             {
+             {   
                  // selectionner les dates (mois) avec leurs valeurs & target.., qui sont dans cet $ind et dans cet $project
                  $months=DB::table('indicatorsproj_value')
                  ->select('indicatorsproj_value.*','projects.project_name','indicatorsprojs.name','taches.tache','perimetres.perimetre','programs.program')
@@ -172,6 +183,7 @@ class HomeController extends Controller
                  ->join('programs','programs.id','perimetres.programs_id')
                  ->join('taches','taches.id','programs.taches_id')
                  ->where('associat_indic_id', $ind->id)
+      
                  ->orderBy('annee')
                  ->orderBy('semaine')
                  ->orderBy('mois')
@@ -184,9 +196,9 @@ class HomeController extends Controller
              }
              $objpro['indics']=$indics;
              $datap[]=$objpro;
-             
-         } print_r($datap);
-       // dd( $datap);
+          
+         } 
+   // dd( $datap);
        $taches=taches::All();
       $perimetres=perimetre::All();
       $programs=programs::All();
@@ -204,6 +216,7 @@ class HomeController extends Controller
          'pjindicators'=>$pjindicators,
          'pjannee'=>$pjannee,
          'pjmois'=>$pjmois,
+         'pjsemaine'=>$pjsemaine,
          'semaines'=>$semaines,
          'fsemaine'=>$fsemaine
          ,'projects'=>$projects
@@ -221,5 +234,44 @@ class HomeController extends Controller
         ->get();
         return response()->json($dataind);
     }
-   
+     /**
+     * Get Ajax Request and restun Data
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function taches()
+    {$projects_name = Input::get('project_name');
+        $taches = DB::table('project_has_taches')
+        ->select('taches.tache','taches.id')
+        ->join('projects','projects.id','project_has_taches.projects_id')
+        ->join('perimetres','perimetres.id','project_has_taches.perimetre_id')
+        ->join('programs','programs.id','perimetres.programs_id')
+        ->join('taches','taches.id','programs.taches_id')
+       ->where("projects.project_name",$projects_name)
+       ->distinct()
+        ->get();
+        return response()->json($taches);
+    }
+    public function programs()
+    {$taches_name = Input::get('tache_name');
+        $programs = DB::table('programs')
+        ->select('programs.program','programs.id')
+        ->join('taches','taches.id','programs.taches_id')
+        ->where("taches.tache",$taches_name)
+        ->distinct()
+        ->get();
+
+        return response()->json($programs);
+    }
+    public function perimetres(){
+        $programs_name = Input::get('programs_name');
+        $perimetres = DB::table('perimetres')
+        ->select('perimetres.perimetre','perimetres.id')
+        ->join('programs','programs.id','perimetres.programs_id')
+        ->where("programs.program",$programs_name)
+        ->distinct()
+        ->get();
+        
+        return response()->json($perimetres);
+      }
 }

@@ -14,11 +14,6 @@ class projects extends Model
         return $this->belongsToMany(perimetre::class, 'project_has_taches');
     }
 
-
-
-
-
-
     public function projectindicator()
     {
         return $this->belongsToMany(indicatorsproj::class,'indicatorsproj_value','projects_id','indicatorsproj_id','value','target');

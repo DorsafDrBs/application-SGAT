@@ -98,15 +98,17 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
              ->join('taches','taches.id','programs.taches_id')
              ->where('projects.project_name',$row[5])
              ->get();
-           
+          
     foreach($data_taches as $taches){
+   
   // test if project on the rows selected has tache
  if($taches->tache == 'No Taches')
 { //project has "No taches" (taches->id =0)
   // Select data of RFT and test if existed in DB
-  print_r($row[5]); 
-  print_r($taches->tache); 
-  print_r($row[1]); 
+  echo" Project  hasen't taches : ";
+  print_r($row[5]); echo " \n tache :";
+  print_r($taches->tache); echo " \n semaine: ";
+  print_r($row[1]);echo " \n  ";
   $test_rft=DB::table('indicatorsproj_value')
   ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
   ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
@@ -219,12 +221,14 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
           
          }		
         }
- else if(($taches->perimetre == 'No Perimetres')&& ($taches->tache != 'No Taches') &&(($taches->program == 'No Programs')||($taches->program != 'No Programs')))
+ else 
  { // MAP project  has taches but haven't programs and perimetres       add condition
     // Insert FRT data of MAP Projects if not existed 
-    print_r($row[5]); 
-    print_r($taches->tache); 
-    print_r($row[1]); 
+    echo" MAP project  has taches : ";
+    print_r($row[5]); echo " \n tache :";
+    print_r($taches->tache); echo " \n semaine: ";
+    
+    print_r($row[1]); echo " \n  ";
      $test_rft=DB::table('indicatorsproj_value')
                   ->select('indicatorsproj_value.annee','indicatorsproj_value.semaine','indicatorsproj_value.mois','associat_indics.*')
                   ->join('associat_indics','associat_indics.id','indicatorsproj_value.associat_indic_id')
@@ -243,7 +247,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                   ->count();
                
          if($test_rft>0)
-              {echo "rft "+ $taches->tache + "data existed \n";}
+              {echo "rft data existed \n";}
          else {
            $data_rft=DB::table('associat_indics')
           ->select('associat_indics.id','associat_indics.target')
@@ -260,6 +264,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
 
           switch($taches->tache):
                   case 'T100':
+                    if(($row[9] > 0 )&&($row[15] > 0 )){
                        $val_rft=number_format(((((int)$row[9]-(int)$row[15])/(int)$row[9])*100), 2 );
                       DB::table('indicatorsproj_value')
                      	 ->insert([ 'associat_indic_id' =>$data_rft->id, 
@@ -271,9 +276,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                           'trimestre'=>$trimestre->id,
 		                     'created_at'=> Carbon::now(),
                         ]);
-                          echo " rft "+ $taches->tache + " data inserted successfully \n";
+                          echo " rft  data inserted successfully \n";}
                   break;
                   case 'T200':
+                    if(($row[10] > 0 )&&($row[16] > 0 )){
                       $val_rft=number_format(((((int)$row[10]-(int)$row[16])/(int)$row[10])*100), 2 );
                             DB::table('indicatorsproj_value')
                                 ->insert([ 'associat_indic_id' =>$data_rft->id,
@@ -285,9 +291,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                            'trimestre'=>$trimestre->id,
                                            'created_at'=> Carbon::now(),
                                        ]);
-                                 echo "rft "+ $taches->tache + " data inserted successfully \n";
+                                 echo "rft  data inserted successfully \n";}
                   break;
                   case 'T300':
+                    if(($row[11] > 0 )&&($row[17] > 0 )){
                        $val_rft=number_format(((((int)$row[11]-(int)$row[17])/(int)$row[11])*100), 2 );
                             DB::table('indicatorsproj_value')
                                 ->insert(['associat_indic_id' =>$data_rft->id,
@@ -300,9 +307,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                            'created_at'=> Carbon::now(),
                                       ]);
                                 
-                             echo "rft" + $taches->tache + "  data inserted successfully \n";
+                             echo "rft data inserted successfully \n";}
                   break;
                   case'DQ1':
+                    if(($row[12] > 0 )&&($row[18] > 0 )){
                      $val_rft=number_format(((((int)$row[12]-(int)$row[18])/(int)$row[12])*100), 2 );
                            DB::table('indicatorsproj_value')
                                 ->insert(['associat_indic_id' =>$data_rft->id,
@@ -314,9 +322,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                            'trimestre'=>$trimestre->id,
                                            'created_at'=> Carbon::now(),
                                        ]);
-                              echo "rft "+ $taches->tache + " data inserted successfully \n"; 
+                              echo "rft  data inserted successfully \n"; }
                   break;
                   case'E2E':
+                    if(($row[13] > 0 )&&($row[19] > 0 )){
                       $val_rft=number_format(((((int)$row[13]-(int)$row[19])/(int)$row[13])*100), 2 );
                             DB::table('indicatorsproj_value')
                                     ->insert(['associat_indic_id' =>$data_rft->id,
@@ -328,7 +337,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                                'trimestre'=>$trimestre->id,
                                                'created_at'=> Carbon::now(),
                                           ]);
-                            echo"rft"+ $taches->tache + "  data E2E inserted successfully \n"; 
+                            echo"rft  data E2E inserted successfully \n"; }
                   break;
                    default:
                     echo"add code case tache: {condition}  break ;if you added a new tache \n"; 
@@ -352,7 +361,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                              ->get();
                              $test_otd=$data_otd->count();
             if($test_otd>0)
-                {echo "OTD"+ $taches->tache + " data existed \n";}
+                {echo "OTD data existed \n";}
             else { 
               $data_otd=DB::table('associat_indics')
               ->select('associat_indics.id','associat_indics.target')
@@ -368,6 +377,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
               ->first();
               switch($taches->tache):
               case 'T100':
+                if(($row[9] > 0 )&&($row[21] > 0 )){
                       $val_otd=number_format(((((int)$row[9]-(int)$row[21])/(int)$row[9])*100), 2 );
                      DB::table('indicatorsproj_value')
                       ->insert([ 'associat_indic_id' =>$data_otd->id,
@@ -379,9 +389,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                       'trimestre'=>$trimestre->id,
                       'created_at'=> Carbon::now(),
                        ]);
-                       echo " OTD "+ $taches->tache + "  data inserted successfully \n";
+                       echo " OTD   data inserted successfully \n";}
               break;
               case 'T200':
+                if(($row[10] > 0 )&&($row[22] > 0 )){
                    $val_otd=number_format(((((int)$row[10]-(int)$row[22])/(int)$row[10])*100), 2 );
                      DB::table('indicatorsproj_value')
                         ->insert(['associat_indic_id' =>$otd->id,
@@ -393,9 +404,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                'trimestre'=>$trimestre->id,
                                'created_at'=> Carbon::now(),
                                 ]);
-                                echo "OTD"+ $taches->tache + "  data  inserted successfully \n";
+                                echo "OTD  data  inserted successfully \n";}
               break;
               case 'T300':
+                if(($row[11] > 0 )&&($row[23] > 0 )){
                      $val_otd=number_format(((((int)$row[11]-(int)$row[23])/(int)$row[11])*100), 2 );
                      DB::table('indicatorsproj_value')
                         ->insert([ 'associat_indic_id' =>$data_otd->id,
@@ -407,9 +419,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                'trimestre'=>$trimestre->id,
                                'created_at'=> Carbon::now(),
                                 ]);
-                  echo "OTD "+ $taches->tache + "data inserted successfully \n";
+                  echo "OTD data inserted successfully \n";}
                break;
                case'DQ1':
+                if(($row[12] > 0 )&&($row[124] > 0 )){
                       $val_otd=number_format(((((int)$row[12]-(int)$row[24])/(int)$row[12])*100), 2 );
                       DB::table('indicatorsproj_value')
                         ->insert([ 'associat_indic_id' =>$otd->id,
@@ -421,9 +434,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                'trimestre'=>$trimestre->id,
                                'created_at'=> Carbon::now(),
                                 ]);
-                                echo "OTD"+ $taches->tache + " data  inserted successfully \n"; 
+                                echo "OTD data  inserted successfully \n";} 
                       break;
                       case'E2E':
+                        if(($row[13] > 0 )&&($row[25] > 0 )){
                         $val_otd=number_format(((((int)$row[13]-(int)$row[25])/(int)$row[13])*100), 2 );
                           DB::table('indicatorsproj_value')
                              ->insert([ 'associat_indic_id' =>$data_otd->id,
@@ -435,7 +449,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                    'trimestre'=>$trimestre->id,
                                    'created_at'=> Carbon::now(),
                                     ]);
-                      echo"OTD "+ $taches->tache + " data inserted successfully \n"; 
+                      echo"OTD  data inserted successfully \n"; }
                           break;
                  default:
                  echo"add code case tache: {condition}  break ;if you added a new tache \n";  
@@ -474,6 +488,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
               ->first();
               switch($taches->tache):
                 case 'T100':
+                  if($row[36] > 0 ){
                     DB::table('indicatorsproj_value')
                         ->insert([ 'associat_indic_id' =>$data_tta->id,
                         'target' => $data_tta->target,
@@ -483,11 +498,11 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                         'mois'=>$mois->id,
                         'trimestre'=>$trimestre->id,
                         'created_at'=> Carbon::now(),
-                         ]);
-                         echo " TTA "+ $taches->tache + "  data inserted successfully \n";
+                        ]);
+                          echo " TTA  data inserted successfully \n";}
                 break;
                 case 'T200':
-                     $val_otd=number_format(((((int)$row[10]-(int)$row[22])/(int)$row[10])*100), 2 );
+                  if($row[37] > 0 ){
                        DB::table('indicatorsproj_value')
                          ->insert([ 'associat_indic_id' =>$data_tta->id,
                                  'target' => $data_tta->target,
@@ -498,10 +513,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                  'trimestre'=>$trimestre->id,
                                  'created_at'=> Carbon::now(),
                                   ]);
-                                  echo "TTA"+ $taches->tache + "  data  inserted successfully \n";
+                                  echo "TTA  data  inserted successfully \n";}
                 break;
                 case 'T300':
-                       $val_otd=number_format(((((int)$row[11]-(int)$row[23])/(int)$row[11])*100), 2 );
+                  if($row[38] > 0 ){
                        DB::table('indicatorsproj_value')
                            ->insert([ 'associat_indic_id' =>$data_tta->id,
                                 'target' => $data_tta->target,
@@ -512,9 +527,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                                  'trimestre'=>$trimestre->id,
                                  'created_at'=> Carbon::now(),
                                   ]);
-                    echo "TTA "+ $taches->tache + "data inserted successfully \n";
+                    echo "TTA data inserted successfully \n";}
                  break;
                  case 'ANIF':
+                  if($row[39] > 0 ){
                   DB::table('indicatorsproj_value')
                       ->insert([ 'associat_indic_id' =>$data_tta->id,
                            'target' => $data_tta->target,
@@ -525,7 +541,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                             'trimestre'=>$trimestre->id,
                             'created_at'=> Carbon::now(),
                              ]);
-               echo "TTA "+ $taches->tache + "data inserted successfully \n";
+               echo "TTA data inserted successfully \n";}
             break;
                    default:
                    echo"add code case tache: {condition}  break ;if you added a new tache \n";  
@@ -565,6 +581,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
               ->first();
          switch($taches->tache):
            case 'T100':
+            if($row[32] > 0 ){
             DB::table('indicatorsproj_value')
             ->insert([ 'associat_indic_id' =>$data_rto->id,
             'target' => $data_rto->target,
@@ -575,9 +592,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
             'trimestre'=>$trimestre->id,
             'created_at'=> Carbon::now(),
              ]);
-             echo " RTO"+ $taches->tache + "  data inserted successfully \n";
+             echo " RTO  data inserted successfully \n";}
           break;
           case 'T200':
+            if($row[33] > 0 ){
            DB::table('indicatorsproj_value')
              ->insert([ 'associat_indic_id' =>$data_rto->id,
                      'target' => $data_rto->target,
@@ -588,9 +606,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                      'trimestre'=>$trimestre->id,
                      'created_at'=> Carbon::now(),
                       ]);
-                      echo "RTO"+ $taches->tache + "  data  inserted successfully \n";
+                      echo "RTO  data  inserted successfully \n";}
     break;
     case 'T300':
+      if($row[34] > 0 ){
             DB::table('indicatorsproj_value')
                ->insert([ 'associat_indic_id' =>$data_rto->id,
                     'target' => $data_rto->target,
@@ -601,9 +620,10 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                      'trimestre'=>$trimestre->id,
                      'created_at'=> Carbon::now(),
                       ]);
-        echo "rft "+ $taches->tache + "data inserted successfully \n";
+        echo "rft data inserted successfully \n";}
      break;
      case 'ANIF':
+      if($row[35] > 0 ){
       DB::table('indicatorsproj_value')
           ->insert([ 'associat_indic_id' =>$data_rto->id,
                'target' => $data_rto->target,
@@ -614,7 +634,7 @@ $rows = $sheet->rangeToArray('B8:' .$highestColumn.$highestRow, NULL, TRUE, TRUE
                 'trimestre'=>$trimestre->id,
                 'created_at'=> Carbon::now(),
                  ]);
-   echo "RTO "+ $taches->tache + "data inserted successfully \n";
+   echo "RTO data inserted successfully \n";}
 break;
        default:
        echo"add code case tache: {condition}  break ;if you added a new tache \n";  
@@ -812,12 +832,10 @@ else{
     
     }
     else
-    { if ($row[30]=='' OR $row[28]=="/" )
-       { echo " your file missed data in cell "+$row[28] ;  }
-       else if ($row[29]=='' OR $row[29]=="/")
-       { echo " your file missed data in cell "+$row[29] ;  }
-      // else if ($row[28]=='' OR $row[28]=="/")
-     //  { echo "your file missed data in callules :"+$row[28]+","+$row[27]+"and"+$row[27];}
+    { if (  $row[28]=="/" )
+       { echo " your file missed data in cell 28" ; }
+       else if ( $row[29]=="/")
+       { echo " your file missed data in cell 29";  }
      
     }
      if ($row[30]>0 && $row[30]!="/")
